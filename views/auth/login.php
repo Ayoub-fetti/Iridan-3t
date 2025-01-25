@@ -8,8 +8,10 @@ session_start();
 if (isset($_SESSION['user_id'])) {
     if ($_SESSION['role'] === 'admin') {
         header('Location: ../admin/admin_dash.php');
+    } elseif ($_SESSION['role'] === 'fonctionnaire') {
+        header('Location: ../fonctionnaire/iridan_dash.php');
     } else {
-        header('Location: ../user/iridan_dash.php');
+        header('Location: ../user/list_cars.php'); 
     }
     exit();
 }
@@ -28,8 +30,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($user->login($email, $password)) {
             if ($_SESSION['role'] === 'admin') {
                 header('Location: ../admin/admin_dash.php');
-            } else {
-                header('Location: ../user/iridan_dash.php');
+            } elseif ($_SESSION['role'] === 'fonctionnaire') {
+                header('Location: ../fonctionnaire/iridan_dash.php');
+            }
+            else {
+                header('Location: ../user/list_cars.php'); 
             }
             exit();
         } else {
