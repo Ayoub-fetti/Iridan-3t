@@ -18,7 +18,7 @@ class User{
         if (isset($_SESSION['user_id'])) {
             $this->id = $_SESSION['user_id'];
             // Charger les informations de l'utilisateur
-            $stmt = $this->pdo->prepare("SELECT * FROM users WHERE id = ?");
+            $stmt = $this->pdo->prepare("SELECT * FROM utilisateur WHERE id = ?");
             $stmt->execute([$this->id]);
             $user = $stmt->fetch();
             if ($user) {
@@ -45,7 +45,7 @@ class User{
 
     // public function login
     public function login($email, $password) {
-        $stmt = $this->pdo->prepare("SELECT * FROM users WHERE email = ? AND password = ?");
+        $stmt = $this->pdo->prepare("SELECT * FROM utilisateur WHERE email = ? AND password = ?");
         $stmt->execute([$email, $password]);
         $user = $stmt->fetch();
 
@@ -63,6 +63,46 @@ class User{
             return true;
         }
         return false;
+    }
+
+    public function createUser($username, $email, $password, $role) {
+        try {
+            // Hasher le mot de passe
+            $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+            
+            // Préparer la requête
+            $stmt = $this->pdo->prepare("INSERT INTO utilisateur (full_name, email, password, role) VALUES (?, ?, ?, ?)");
+            
+            // Exécuter la requête
+            $result = $stmt->execute([$username, $email, $hashedPassword, $role]);
+            
+            if ($result) {
+                return [
+                    'success' => true,
+                    'message' => 'Utilisateur créé avec succès',
+                    'user_id' => $this->pdo->lastInsertId()
+                ];
+            } else {
+                return [
+                    'success' => false,
+                    'message' => 'Erreur lors de la création de l\'utilisateur'
+                ];
+            }
+        } catch (PDOException $e) {
+            return [
+                'success' => false,
+                'message' => 'Erreur: ' . $e->getMessage()
+            ];
+        }
+    }
+
+    public function getAllUsers() {
+        try {
+            $stmt = $this->pdo->query("SELECT id, full_name, email, role FROM utilisateur");
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            return [];
+        }
     }
 }
 ?>

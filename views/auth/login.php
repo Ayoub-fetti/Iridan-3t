@@ -33,9 +33,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             } elseif ($_SESSION['role'] === 'fonctionnaire') {
                 header('Location: ../fonctionnaire/iridan_dash.php');
             }
-            else {
-                header('Location: ../user/list_cars.php'); 
-            }
             exit();
         } else {
             $error = 'Email ou mot de passe incorrect';
