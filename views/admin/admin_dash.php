@@ -2,6 +2,11 @@
 require_once '../../config/Database.php';
 require_once '../../models/user.php';
 
+// Débogage des chemins
+error_log("Current script path: " . __FILE__);
+error_log("Document root: " . $_SERVER['DOCUMENT_ROOT']);
+error_log("Request URI: " . $_SERVER['REQUEST_URI']);
+
 // Initialiser la connexion à la base de données
 $database = new Database();
 $db = $database->connect();
@@ -51,21 +56,29 @@ $users = $user->getAllUsers();
     </div>
     <nav class="mt-6">
      <ul>
-      <li class="px-6 py-2 text-gray-700 hover:bg-gray-200">
-       <i class="fas fa-tachometer-alt mr-2"></i>
-       Tableau de bord
+      <li>
+       <a href="admin_dash.php" class="flex items-center px-6 py-2 text-gray-700 hover:bg-gray-200 <?php echo basename($_SERVER['PHP_SELF']) === 'admin_dash.php' ? 'bg-gray-200' : ''; ?>">
+         <i class="fas fa-tachometer-alt mr-2"></i>
+         Tableau de bord
+       </a>
       </li>
-      <li class="px-6 py-2 text-gray-700 hover:bg-gray-200">
-       <i class="fas fa-users mr-2"></i>
-       Utilisateurs
+      <!-- <li>
+       <a href="admin_users.php" class="flex items-center px-6 py-2 text-gray-700 hover:bg-gray-200 <?php echo basename($_SERVER['PHP_SELF']) === 'admin_users.php' ? 'bg-gray-200' : ''; ?>">
+         <i class="fas fa-users mr-2"></i>
+         Utilisateurs
+       </a>
+      </li> -->
+      <li>
+       <a href="admin_stat.php" class="flex items-center px-6 py-2 text-gray-700 hover:bg-gray-200 <?php echo basename($_SERVER['PHP_SELF']) === 'admin_stat.php' ? 'bg-gray-200' : ''; ?>">
+         <i class="fas fa-chart-line mr-2"></i>
+         Statistiques
+       </a>
       </li>
-      <li class="px-6 py-2 text-gray-700 hover:bg-gray-200">
-       <i class="fas fa-chart-line mr-2"></i>
-       Statistiques
-      </li>
-      <li class="px-6 py-2 text-gray-700 hover:bg-red-200">
-       <i class="fas fa-sign-out-alt mr-2"></i>
-       Déconnexion
+      <li>
+       <a href="../auth/logout.php" class="flex items-center px-6 py-2 text-gray-700 hover:bg-red-200">
+         <i class="fas fa-sign-out-alt mr-2"></i>
+         Déconnexion
+       </a>
       </li>
      </ul>
     </nav>
@@ -100,8 +113,12 @@ $users = $user->getAllUsers();
             <td class="px-6 py-4 whitespace-nowrap"><?php echo htmlspecialchars($user['email']); ?></td>
             <td class="px-6 py-4 whitespace-nowrap"><?php echo htmlspecialchars($user['role']); ?></td>
             <td class="px-6 py-4 whitespace-nowrap">
-              <button class="text-blue-600 hover:text-blue-900 mr-2"><i class="fas fa-edit"></i></button>
-              <button class="text-red-600 hover:text-red-900"><i class="fas fa-trash"></i></button>
+              <button onclick='openEditModal(<?php echo json_encode($user); ?>)' class="text-blue-600 hover:text-blue-800 mr-2">
+                <i class="fas fa-edit"></i>
+              </button>
+              <button onclick="confirmDelete(<?php echo $user['id']; ?>)" class="text-red-600 hover:text-red-800">
+                <i class="fas fa-trash"></i>
+              </button>
             </td>
           </tr>
           <?php endforeach; ?>
@@ -145,6 +162,40 @@ $users = $user->getAllUsers();
         <div id="message" class="mt-4"></div>
       </div>
     </div>
+
+    <!-- Modal pour éditer un utilisateur -->
+    <div id="editModal" class="modal">
+      <div class="modal-content">
+        <div class="flex justify-between items-center mb-4">
+          <h3 class="text-xl font-semibold">Éditer un utilisateur</h3>
+          <button onclick="closeEditModal()" class="text-gray-500 hover:text-gray-700">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <form id="editUserForm" class="space-y-4">
+          <input type="hidden" id="editUserId" name="id">
+          <div>
+            <label class="block text-sm font-medium text-gray-700">Nom d'utilisateur</label>
+            <input type="text" id="editUsername" name="username" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" required>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700">Email</label>
+            <input type="email" id="editEmail" name="email" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" required>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700">Rôle</label>
+            <select id="editRole" name="role" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" required>
+              <option value="fonctionnaire">Fonctionnaire</option>
+              <option value="admin">Administrateur</option>
+            </select>
+          </div>
+          <button type="submit" class="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+            Éditer l'utilisateur
+          </button>
+        </form>
+        <div id="message" class="mt-4"></div>
+      </div>
+    </div>
    </div>
   </div>
 
@@ -159,10 +210,126 @@ $users = $user->getAllUsers();
       document.getElementById('createUserModal').style.display = 'none';
     }
 
-    // Fermer le modal si on clique en dehors
+    function openEditModal(user) {
+      console.log('Opening edit modal for user:', user);
+      document.getElementById('editUserId').value = user.id;
+      document.getElementById('editUsername').value = user.full_name;
+      document.getElementById('editEmail').value = user.email;
+      document.getElementById('editRole').value = user.role;
+      document.getElementById('editModal').style.display = 'block';
+    }
+
+    function closeEditModal() {
+      document.getElementById('editModal').style.display = 'none';
+    }
+
+    // Fonction utilitaire pour construire les chemins
+    function getControllerUrl(controller) {
+      const basePath = '../../controllers/';
+      return basePath + controller;
+    }
+
+    function updateUser(event) {
+      event.preventDefault();
+      
+      // Récupérer les données du formulaire
+      const userId = document.getElementById('editUserId').value;
+      const username = document.getElementById('editUsername').value;
+      const email = document.getElementById('editEmail').value;
+      const role = document.getElementById('editRole').value;
+
+      // Valider les données
+      if (!userId || !username || !email || !role) {
+        alert('Tous les champs sont requis');
+        return;
+      }
+
+      // Créer l'objet de données
+      const formData = {
+        id: userId,
+        username: username,
+        email: email,
+        role: role
+      };
+
+      console.log('Sending update request with data:', formData);
+
+      // Désactiver le formulaire pendant la requête
+      const form = document.getElementById('editUserForm');
+      const submitButton = form.querySelector('button[type="submit"]');
+      submitButton.disabled = true;
+
+      $.ajax({
+        url: getControllerUrl('update_user.php'),
+        type: 'POST',
+        data: formData,
+        dataType: 'json',
+        success: function(response) {
+          console.log('Update response:', response);
+          if (response.success) {
+            alert('Utilisateur mis à jour avec succès');
+            location.reload();
+          } else {
+            alert('Erreur: ' + (response.message || 'Erreur inconnue'));
+          }
+        },
+        error: function(xhr, status, error) {
+          console.error('Ajax error:', status, error);
+          console.error('Response:', xhr.responseText);
+          console.error('Status:', xhr.status);
+          try {
+            const response = JSON.parse(xhr.responseText);
+            alert('Erreur: ' + (response.message || 'Erreur inconnue'));
+          } catch (e) {
+            alert('Erreur lors de la mise à jour: ' + error);
+          }
+        },
+        complete: function() {
+          // Réactiver le formulaire
+          submitButton.disabled = false;
+        }
+      });
+    }
+
+    // Attacher l'événement submit au formulaire
+    document.getElementById('editUserForm').addEventListener('submit', updateUser);
+
+    function confirmDelete(userId) {
+      console.log('Confirming delete for user ID:', userId);
+      if (confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ?')) {
+        $.ajax({
+          url: getControllerUrl('delete_user.php'),
+          type: 'POST',
+          data: { id: userId },
+          dataType: 'json',
+          success: function(response) {
+            console.log('Delete response:', response);
+            if (response.success) {
+              alert('Utilisateur supprimé avec succès');
+              location.reload();
+            } else {
+              alert('Erreur: ' + (response.message || 'Erreur inconnue'));
+            }
+          },
+          error: function(xhr, status, error) {
+            console.error('Ajax error:', status, error);
+            console.error('Response:', xhr.responseText);
+            console.error('Status:', xhr.status);
+            try {
+              const response = JSON.parse(xhr.responseText);
+              alert('Erreur: ' + (response.message || 'Erreur inconnue'));
+            } catch (e) {
+              alert('Erreur lors de la suppression: ' + error);
+            }
+          }
+        });
+      }
+    }
+
+    // Fermer la modale si l'utilisateur clique en dehors
     window.onclick = function(event) {
-      if (event.target == document.getElementById('createUserModal')) {
-        closeModal();
+      if (event.target.className === 'modal') {
+        event.target.style.display = 'none';
       }
     }
 
@@ -171,28 +338,30 @@ $users = $user->getAllUsers();
         e.preventDefault();
         
         $.ajax({
-          url: '../../controllers/create_user.php',
+          url: getControllerUrl('create_user.php'),
           method: 'POST',
           data: $(this).serialize(),
-          success: function(response) {
-            const data = JSON.parse(response);
-            
+          dataType: 'json',
+          success: function(data) {
             if (data.success) {
+              // Réinitialiser le formulaire
+              $('#createUserForm')[0].reset();
+              
               // Fermer le modal
               document.getElementById('createUserModal').style.display = 'none';
-              $('#createUserForm')[0].reset();
               
               // Afficher une alerte de succès
               alert('Utilisateur créé avec succès!');
               
               // Recharger la page
-              window.location.reload();
+              setTimeout(function() {
+                location.reload();
+              }, 100);
             } else {
               $('#message').html(`<div class="p-4 bg-red-100 text-red-700 rounded-md">${data.message}</div>`);
             }
           },
           error: function(xhr, status, error) {
-            console.error('Erreur AJAX:', status, error);
             $('#message').html(`<div class="p-4 bg-red-100 text-red-700 rounded-md">Erreur de connexion au serveur: ${error}</div>`);
           }
         });

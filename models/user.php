@@ -104,5 +104,100 @@ class User{
             return [];
         }
     }
+
+    public function updateUser($userId, $username, $email, $role) {
+        try {
+            // Log des données reçues
+            error_log("updateUser called with - ID: $userId, Username: $username, Email: $email, Role: $role");
+
+            // Vérifier si l'utilisateur existe
+            $checkStmt = $this->pdo->prepare("SELECT id FROM utilisateur WHERE id = ?");
+            $checkStmt->execute([$userId]);
+            if (!$checkStmt->fetch()) {
+                error_log("User not found - ID: $userId");
+                return [
+                    'success' => false,
+                    'message' => 'Utilisateur non trouvé'
+                ];
+            }
+
+            // Vérifier si l'email est déjà utilisé par un autre utilisateur
+            $emailStmt = $this->pdo->prepare("SELECT id FROM utilisateur WHERE email = ? AND id != ?");
+            $emailStmt->execute([$email, $userId]);
+            if ($emailStmt->fetch()) {
+                error_log("Email already in use: $email");
+                return [
+                    'success' => false,
+                    'message' => 'Cet email est déjà utilisé par un autre utilisateur'
+                ];
+            }
+
+            $stmt = $this->pdo->prepare("UPDATE utilisateur SET full_name = ?, email = ?, role = ? WHERE id = ?");
+            $result = $stmt->execute([$username, $email, $role, $userId]);
+            
+            if ($result) {
+                $rowCount = $stmt->rowCount();
+                error_log("Update successful - Rows affected: $rowCount");
+                return [
+                    'success' => true,
+                    'message' => 'Utilisateur mis à jour avec succès',
+                    'rowCount' => $rowCount
+                ];
+            } else {
+                error_log("Update failed - PDO error info: " . print_r($stmt->errorInfo(), true));
+                return [
+                    'success' => false,
+                    'message' => 'Erreur lors de la mise à jour de l\'utilisateur'
+                ];
+            }
+        } catch (PDOException $e) {
+            error_log("PDO Exception in updateUser: " . $e->getMessage());
+            return [
+                'success' => false,
+                'message' => 'Erreur lors de la mise à jour de l\'utilisateur: ' . $e->getMessage()
+            ];
+        } catch (Exception $e) {
+            error_log("General Exception in updateUser: " . $e->getMessage());
+            return [
+                'success' => false,
+                'message' => 'Erreur inattendue: ' . $e->getMessage()
+            ];
+        }
+    }
+
+    public function deleteUser($userId) {
+        try {
+            // Vérifier si l'utilisateur existe
+            $checkStmt = $this->pdo->prepare("SELECT id FROM utilisateur WHERE id = ?");
+            $checkStmt->execute([$userId]);
+            if (!$checkStmt->fetch()) {
+                return [
+                    'success' => false,
+                    'message' => 'Utilisateur non trouvé'
+                ];
+            }
+
+            $stmt = $this->pdo->prepare("DELETE FROM utilisateur WHERE id = ?");
+            $result = $stmt->execute([$userId]);
+            
+            if ($result && $stmt->rowCount() > 0) {
+                return [
+                    'success' => true,
+                    'message' => 'Utilisateur supprimé avec succès'
+                ];
+            } else {
+                return [
+                    'success' => false,
+                    'message' => 'Erreur lors de la suppression de l\'utilisateur'
+                ];
+            }
+        } catch (PDOException $e) {
+            error_log("Erreur SQL lors de la suppression: " . $e->getMessage());
+            return [
+                'success' => false,
+                'message' => 'Erreur lors de la suppression de l\'utilisateur'
+            ];
+        }
+    }
 }
 ?>
