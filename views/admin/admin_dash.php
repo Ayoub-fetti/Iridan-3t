@@ -116,9 +116,11 @@ $users = $user->getAllUsers();
               <button onclick='openEditModal(<?php echo json_encode($user); ?>)' class="text-blue-600 hover:text-blue-800 mr-2">
                 <i class="fas fa-edit"></i>
               </button>
+              <?php if ($user['role'] !== 'admin'): ?>
               <button onclick="confirmDelete(<?php echo $user['id']; ?>)" class="text-red-600 hover:text-red-800">
                 <i class="fas fa-trash"></i>
               </button>
+              <?php endif; ?>
             </td>
           </tr>
           <?php endforeach; ?>
@@ -138,19 +140,19 @@ $users = $user->getAllUsers();
         <form id="createUserForm" class="space-y-4">
           <div>
             <label class="block text-sm font-medium text-gray-700">Nom d'utilisateur</label>
-            <input type="text" name="username" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" required>
+            <input type="text" name="username" class="mt-1 block w-full rounded-md border border-black shadow-sm focus:border-blue-500 focus:ring-blue-500" required>
           </div>
           <div>
             <label class="block text-sm font-medium text-gray-700">Email</label>
-            <input type="email" name="email" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" required>
+            <input type="email" name="email" class="mt-1 block w-full rounded-md border border-black shadow-sm focus:border-blue-500 focus:ring-blue-500" required>
           </div>
           <div>
             <label class="block text-sm font-medium text-gray-700">Mot de passe</label>
-            <input type="password" name="password" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" required>
+            <input type="password" name="password" class="mt-1 block w-full rounded-md border border-black shadow-sm focus:border-blue-500 focus:ring-blue-500" required>
           </div>
           <div>
             <label class="block text-sm font-medium text-gray-700">Rôle</label>
-            <select name="role" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" required>
+            <select name="role" class="mt-1 block w-full rounded-md border border-black shadow-sm focus:border-blue-500 focus:ring-blue-500" required>
               <option value="fonctionnaire">Fonctionnaire</option>
               <option value="admin">Administrateur</option>
             </select>
@@ -176,15 +178,19 @@ $users = $user->getAllUsers();
           <input type="hidden" id="editUserId" name="id">
           <div>
             <label class="block text-sm font-medium text-gray-700">Nom d'utilisateur</label>
-            <input type="text" id="editUsername" name="username" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" required>
+            <input type="text" id="editUsername" name="username" class="mt-1 block w-full rounded-md border border-black shadow-sm focus:border-blue-500 focus:ring-blue-500" required>
           </div>
           <div>
             <label class="block text-sm font-medium text-gray-700">Email</label>
-            <input type="email" id="editEmail" name="email" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" required>
+            <input type="email" id="editEmail" name="email" class="mt-1 block w-full rounded-md border border-black shadow-sm focus:border-blue-500 focus:ring-blue-500" required>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700">Mot de passe</label>
+            <input type="text" id="editPassword" name="password" class="mt-1 block w-full rounded-md border border-black shadow-sm focus:border-blue-500 focus:ring-blue-500" placeholder="Laissez vide pour ne pas modifier">
           </div>
           <div>
             <label class="block text-sm font-medium text-gray-700">Rôle</label>
-            <select id="editRole" name="role" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" required>
+            <select id="editRole" name="role" class="mt-1 block w-full rounded-md border border-black shadow-sm focus:border-blue-500 focus:ring-blue-500" required>
               <option value="fonctionnaire">Fonctionnaire</option>
               <option value="admin">Administrateur</option>
             </select>
@@ -215,6 +221,7 @@ $users = $user->getAllUsers();
       document.getElementById('editUserId').value = user.id;
       document.getElementById('editUsername').value = user.full_name;
       document.getElementById('editEmail').value = user.email;
+      document.getElementById('editPassword').value = user.password;
       document.getElementById('editRole').value = user.role;
       document.getElementById('editModal').style.display = 'block';
     }
@@ -236,6 +243,7 @@ $users = $user->getAllUsers();
       const userId = document.getElementById('editUserId').value;
       const username = document.getElementById('editUsername').value;
       const email = document.getElementById('editEmail').value;
+      const password = document.getElementById('editPassword').value;
       const role = document.getElementById('editRole').value;
 
       // Valider les données
@@ -249,6 +257,7 @@ $users = $user->getAllUsers();
         id: userId,
         username: username,
         email: email,
+        password: password,
         role: role
       };
 

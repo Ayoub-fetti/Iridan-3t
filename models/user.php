@@ -65,16 +65,14 @@ class User{
         return false;
     }
 
+    // fonction pour creer un utilisateur 
     public function createUser($username, $email, $password, $role) {
         try {
-            // Hasher le mot de passe
-            $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
-            
             // Préparer la requête
             $stmt = $this->pdo->prepare("INSERT INTO utilisateur (full_name, email, password, role) VALUES (?, ?, ?, ?)");
             
             // Exécuter la requête
-            $result = $stmt->execute([$username, $email, $hashedPassword, $role]);
+            $result = $stmt->execute([$username, $email, $password, $role]);
             
             if ($result) {
                 return [
@@ -95,17 +93,17 @@ class User{
             ];
         }
     }
-
+    // pour recuperer les utilisateur
     public function getAllUsers() {
         try {
-            $stmt = $this->pdo->query("SELECT id, full_name, email, role FROM utilisateur");
+            $stmt = $this->pdo->query("SELECT id, full_name, email, password, role FROM utilisateur");
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
             return [];
         }
     }
-
-    public function updateUser($userId, $username, $email, $role) {
+    // pour modifier utilisateur
+    public function updateUser($userId, $username, $email, $role, $password = null) {
         try {
             // Log des données reçues
             error_log("updateUser called with - ID: $userId, Username: $username, Email: $email, Role: $role");
@@ -132,8 +130,14 @@ class User{
                 ];
             }
 
-            $stmt = $this->pdo->prepare("UPDATE utilisateur SET full_name = ?, email = ?, role = ? WHERE id = ?");
-            $result = $stmt->execute([$username, $email, $role, $userId]);
+            // Préparer la requête SQL en fonction de la présence ou non d'un nouveau mot de passe
+            if ($password !== null) {
+                $stmt = $this->pdo->prepare("UPDATE utilisateur SET full_name = ?, email = ?, role = ?, password = ? WHERE id = ?");
+                $result = $stmt->execute([$username, $email, $role, $password, $userId]);
+            } else {
+                $stmt = $this->pdo->prepare("UPDATE utilisateur SET full_name = ?, email = ?, role = ? WHERE id = ?");
+                $result = $stmt->execute([$username, $email, $role, $userId]);
+            }
             
             if ($result) {
                 $rowCount = $stmt->rowCount();
@@ -164,16 +168,26 @@ class User{
             ];
         }
     }
-
+    // pour supprimer utilisateur 
     public function deleteUser($userId) {
         try {
-            // Vérifier si l'utilisateur existe
-            $checkStmt = $this->pdo->prepare("SELECT id FROM utilisateur WHERE id = ?");
+            // Vérifier si l'utilisateur existe et récupérer son rôle
+            $checkStmt = $this->pdo->prepare("SELECT id, role FROM utilisateur WHERE id = ?");
             $checkStmt->execute([$userId]);
-            if (!$checkStmt->fetch()) {
+            $user = $checkStmt->fetch();
+            
+            if (!$user) {
                 return [
                     'success' => false,
                     'message' => 'Utilisateur non trouvé'
+                ];
+            }
+
+            // Empêcher la suppression des administrateurs
+            if ($user['role'] === 'admin') {
+                return [
+                    'success' => false,
+                    'message' => 'Impossible de supprimer un compte administrateur'
                 ];
             }
 

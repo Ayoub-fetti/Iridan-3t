@@ -24,6 +24,7 @@ try {
     $username = filter_input(INPUT_POST, 'username', FILTER_SANITIZE_STRING);
     $email = filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL);
     $role = filter_input(INPUT_POST, 'role', FILTER_SANITIZE_STRING);
+    $password = filter_input(INPUT_POST, 'password', FILTER_SANITIZE_STRING);
 
     error_log("Données filtrées - ID: $userId, Username: $username, Email: $email, Role: $role");
 
@@ -42,8 +43,8 @@ try {
 
     $user = new User($db);
 
-    // Mettre à jour l'utilisateur
-    $result = $user->updateUser($userId, $username, $email, $role);
+    // Mettre à jour l'utilisateur avec ou sans mot de passe
+    $result = $user->updateUser($userId, $username, $email, $role, !empty($password) ? $password : null);
     error_log("Résultat de la mise à jour: " . print_r($result, true));
 
     if (!$result['success']) {
