@@ -37,7 +37,7 @@ try {
         'adresse' => $_POST['adresse'] ?? null,
         'contrat' => $_POST['contrat'] ?? null,
         'date_embauche' => $_POST['date_embauche'],
-        'date_demission' => null,
+        'date_demission' => $_POST['date_demission'],
         'permit_conduire' => null, // Sera mis à jour avec le chemin du fichier
         'date_expiration_permit' => $_POST['date_expiration_permit'] ?? null,
         'visite_medicale' => null, // Sera mis à jour avec le chemin du fichier

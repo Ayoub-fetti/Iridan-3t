@@ -31,7 +31,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if ($_SESSION['role'] === 'admin') {
                 header('Location: ../admin/admin_dash.php');
             } elseif ($_SESSION['role'] === 'fonctionnaire') {
-                header('Location: ../fonctionnaire/iridan_dash.php');
+                header('Location: ../fonctionnaire/gestion_users.php');
             }
             exit();
         } else {

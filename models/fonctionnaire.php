@@ -8,7 +8,7 @@ class Fonctionnaire {
         $database = new Database();
         $this->conn = $database->connect();
     }
-
+// pour ajouter un personnel
     public function createPersonnel($data) {
         try {
             $query = "INSERT INTO personnel (
@@ -75,6 +75,27 @@ class Fonctionnaire {
             return [
                 'success' => false,
                 'message' => 'Erreur lors de la création du personnel'
+            ];
+
+        } catch(PDOException $e) {
+            return [
+                'success' => false,
+                'message' => 'Erreur: ' . $e->getMessage()
+            ];
+        }
+    }
+
+    // Pour récupérer tous les personnels avec toutes les informations
+    public function getAllPersonnel() {
+        try {
+            $query = "SELECT * FROM personnel ORDER BY date_embauche DESC";
+
+            $stmt = $this->conn->prepare($query);
+            $stmt->execute();
+
+            return [
+                'success' => true,
+                'data' => $stmt->fetchAll(PDO::FETCH_ASSOC)
             ];
 
         } catch(PDOException $e) {
