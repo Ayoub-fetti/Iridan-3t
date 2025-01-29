@@ -142,7 +142,7 @@ $fonctionnaire = new Fonctionnaire();
                         if ($result['success']) {
                             foreach ($result['data'] as $person) {
                                 ?>
-                                <tr>
+                                <tr data-id="<?php echo htmlspecialchars($person['id'] ?? ''); ?>">
                                     <td class="px-6 py-4 whitespace-nowrap photo-cell">
                                         <?php if (!empty($person['photo'])) : ?>
                                             <img src="../../<?php echo htmlspecialchars($person['photo'] ?? ''); ?>" alt="Photo de profil" class="profile-photo">
@@ -188,7 +188,7 @@ $fonctionnaire = new Fonctionnaire();
                                         <a href="#" class="text-green-600 hover:text-green-900 mr-2" title="Modifier">
                                             <i class="fas fa-edit"></i>
                                         </a>
-                                        <a href="#" class="text-red-600 hover:text-red-900" title="Supprimer">
+                                        <a href="#" onclick="deletePersonnel(<?php echo htmlspecialchars($person['id'] ?? ''); ?>)" class="text-red-600 hover:text-red-900" title="Supprimer">
                                             <i class="fas fa-trash"></i>
                                         </a>
                                     </td>
@@ -315,6 +315,8 @@ $fonctionnaire = new Fonctionnaire();
 
     <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         function openModal() {
             document.getElementById('createPersonnelModal').style.display = 'block';
@@ -366,6 +368,53 @@ $fonctionnaire = new Fonctionnaire();
                 });
             });
         });
+
+        function deletePersonnel(id) {
+            Swal.fire({
+                title: 'Êtes-vous sûr?',
+                text: "Cette action est irréversible!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Oui, supprimer!',
+                cancelButtonText: 'Annuler'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: '../../controllers/personnel/delete.php',
+                        type: 'POST',
+                        data: { id: id },
+                        success: function(response) {
+                            if (response.success) {
+                                // Supprimer la ligne du tableau
+                                $(`tr[data-id="${id}"]`).fadeOut(400, function() {
+                                    $(this).remove();
+                                });
+                                Swal.fire(
+                                    'Supprimé!',
+                                    'L\'utilisateur a été supprimé avec succès.',
+                                    'success'
+                                );
+                            } else {
+                                Swal.fire(
+                                    'Erreur!',
+                                    response.message || 'Une erreur est survenue lors de la suppression.',
+                                    'error'
+                                );
+                            }
+                        },
+                        error: function() {
+                            Swal.fire(
+                                'Erreur!',
+                                'Une erreur est survenue lors de la communication avec le serveur.',
+                                'error'
+                            );
+                        }
+                    });
+                }
+            });
+        }
     </script>
 </body>
 </html>

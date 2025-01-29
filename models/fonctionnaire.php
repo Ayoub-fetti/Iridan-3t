@@ -105,4 +105,31 @@ class Fonctionnaire {
             ];
         }
     }
+
+    // Pour supprimer un personnel
+    public function deletePersonnel($id) {
+        try {
+            $query = "DELETE FROM personnel WHERE id = :id";
+            $stmt = $this->conn->prepare($query);
+            $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+
+            if($stmt->execute()) {
+                return [
+                    'success' => true,
+                    'message' => 'Personnel supprimé avec succès'
+                ];
+            }
+
+            return [
+                'success' => false,
+                'message' => 'Erreur lors de la suppression du personnel'
+            ];
+
+        } catch(PDOException $e) {
+            return [
+                'success' => false,
+                'message' => 'Erreur: ' . $e->getMessage()
+            ];
+        }
+    }
 }
