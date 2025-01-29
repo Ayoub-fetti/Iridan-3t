@@ -185,4 +185,329 @@ class Fonctionnaire {
             ];
         }
     }
+
+    // Pour ajouter une voiture
+    public function createCar($data, $files) {
+        try {
+            // Gérer les téléchargements de fichiers
+            $uploadedFiles = [];
+            $fileFields = [
+                'carte_grise' => 'carte_grise',
+                'visite_technique' => 'visite_technique',
+                'assurance' => 'assurance',
+                'vignette' => 'vignette',
+                'feuille_circulation' => 'circulation',
+                'feuille_extincteur' => 'extincteur',
+                'feuille_tachygraphe' => 'tachygraphe'
+            ];
+
+            foreach ($fileFields as $field => $folder) {
+                if (isset($files[$field]) && $files[$field]['error'] === 0) {
+                    $file = $files[$field];
+                    $fileName = uniqid() . '_' . basename($file['name']);
+                    $targetPath = __DIR__ . '/../uploads/cars/' . $folder . '/' . $fileName;
+                    
+                    // Vérifier si c'est un PDF
+                    $fileType = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+                    if ($fileType != "pdf") {
+                        throw new Exception("Le fichier $field doit être un PDF");
+                    }
+
+                    // Déplacer le fichier
+                    if (move_uploaded_file($file['tmp_name'], $targetPath)) {
+                        $uploadedFiles[$field] = 'uploads/cars/' . $folder . '/' . $fileName;
+                    } else {
+                        throw new Exception("Erreur lors du téléchargement du fichier $field");
+                    }
+                } else {
+                    throw new Exception("Le fichier $field est requis");
+                }
+            }
+
+            // Mettre à jour les chemins des fichiers dans $data
+            foreach ($fileFields as $field => $folder) {
+                $data[$field] = $uploadedFiles[$field];
+            }
+
+            $query = "INSERT INTO cars (
+                matricule,
+                marque,
+                ville,
+                chauffeurs_id,
+                carte_grise,
+                date_expiration_carte_grise,
+                visite_technique,
+                date_expiration_visite,
+                assurance,
+                date_expiration_assurance,
+                vignette,
+                date_expiration_vignette,
+                feuille_circulation,
+                date_expiration_circulation,
+                feuille_extincteur,
+                date_expiration_extincteur,
+                feuille_tachygraphe,
+                date_expiration_tachygraphe,
+                status
+            ) VALUES (
+                :matricule,
+                :marque,
+                :ville,
+                :chauffeurs_id,
+                :carte_grise,
+                :date_expiration_carte_grise,
+                :visite_technique,
+                :date_expiration_visite,
+                :assurance,
+                :date_expiration_assurance,
+                :vignette,
+                :date_expiration_vignette,
+                :feuille_circulation,
+                :date_expiration_circulation,
+                :feuille_extincteur,
+                :date_expiration_extincteur,
+                :feuille_tachygraphe,
+                :date_expiration_tachygraphe,
+                :status
+            )";
+
+            $stmt = $this->conn->prepare($query);
+
+            // Bind les paramètres
+            $stmt->bindParam(':matricule', $data['matricule']);
+            $stmt->bindParam(':marque', $data['marque']);
+            $stmt->bindParam(':ville', $data['ville']);
+            $stmt->bindParam(':chauffeurs_id', $data['chauffeurs_id']);
+            $stmt->bindParam(':carte_grise', $data['carte_grise']);
+            $stmt->bindParam(':date_expiration_carte_grise', $data['date_expiration_carte_grise']);
+            $stmt->bindParam(':visite_technique', $data['visite_technique']);
+            $stmt->bindParam(':date_expiration_visite', $data['date_expiration_visite']);
+            $stmt->bindParam(':assurance', $data['assurance']);
+            $stmt->bindParam(':date_expiration_assurance', $data['date_expiration_assurance']);
+            $stmt->bindParam(':vignette', $data['vignette']);
+            $stmt->bindParam(':date_expiration_vignette', $data['date_expiration_vignette']);
+            $stmt->bindParam(':feuille_circulation', $data['feuille_circulation']);
+            $stmt->bindParam(':date_expiration_circulation', $data['date_expiration_circulation']);
+            $stmt->bindParam(':feuille_extincteur', $data['feuille_extincteur']);
+            $stmt->bindParam(':date_expiration_extincteur', $data['date_expiration_extincteur']);
+            $stmt->bindParam(':feuille_tachygraphe', $data['feuille_tachygraphe']);
+            $stmt->bindParam(':date_expiration_tachygraphe', $data['date_expiration_tachygraphe']);
+            $stmt->bindParam(':status', $data['status']);
+
+            if($stmt->execute()) {
+                return [
+                    'success' => true,
+                    'message' => 'Voiture ajoutée avec succès'
+                ];
+            }
+
+            return [
+                'success' => false,
+                'message' => 'Erreur lors de l\'ajout de la voiture'
+            ];
+
+        } catch(Exception $e) {
+            return [
+                'success' => false,
+                'message' => 'Erreur: ' . $e->getMessage()
+            ];
+        }
+    }
+
+    // Pour récupérer toutes les voitures
+    public function getAllCars() {
+        try {
+            $query = "SELECT c.*, p.nom_complet as chauffeur_nom 
+                     FROM cars c 
+                     LEFT JOIN personnel p ON c.chauffeurs_id = p.id 
+                     ORDER BY c.matricule";
+            $stmt = $this->conn->prepare($query);
+            $stmt->execute();
+
+            return [
+                'success' => true,
+                'data' => $stmt->fetchAll(PDO::FETCH_ASSOC)
+            ];
+
+        } catch(PDOException $e) {
+            return [
+                'success' => false,
+                'message' => 'Erreur: ' . $e->getMessage()
+            ];
+        }
+    }
+
+    // Pour récupérer une voiture spécifique
+    public function getCarByMatricule($matricule) {
+        try {
+            $query = "SELECT c.*, p.nom_complet as chauffeur_nom 
+                     FROM cars c 
+                     LEFT JOIN personnel p ON c.chauffeurs_id = p.id 
+                     WHERE c.matricule = :matricule";
+            $stmt = $this->conn->prepare($query);
+            $stmt->bindParam(':matricule', $matricule);
+            $stmt->execute();
+
+            $car = $stmt->fetch(PDO::FETCH_ASSOC);
+            
+            if($car) {
+                return [
+                    'success' => true,
+                    'data' => $car
+                ];
+            }
+
+            return [
+                'success' => false,
+                'message' => 'Voiture non trouvée'
+            ];
+
+        } catch(PDOException $e) {
+            return [
+                'success' => false,
+                'message' => 'Erreur: ' . $e->getMessage()
+            ];
+        }
+    }
+
+    // Pour modifier une voiture
+    public function updateCar($oldMatricule, $data, $files = null) {
+        try {
+            $fileFields = [
+                'carte_grise' => 'carte_grise',
+                'visite_technique' => 'visite_technique',
+                'assurance' => 'assurance',
+                'vignette' => 'vignette',
+                'feuille_circulation' => 'circulation',
+                'feuille_extincteur' => 'extincteur',
+                'feuille_tachygraphe' => 'tachygraphe'
+            ];
+
+            // Gérer les nouveaux fichiers s'ils sont fournis
+            if ($files) {
+                foreach ($fileFields as $field => $folder) {
+                    if (isset($files[$field]) && $files[$field]['error'] === 0) {
+                        $file = $files[$field];
+                        $fileName = uniqid() . '_' . basename($file['name']);
+                        $targetPath = __DIR__ . '/../uploads/cars/' . $folder . '/' . $fileName;
+                        
+                        // Vérifier si c'est un PDF
+                        $fileType = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+                        if ($fileType != "pdf") {
+                            throw new Exception("Le fichier $field doit être un PDF");
+                        }
+
+                        // Supprimer l'ancien fichier
+                        $oldFile = $this->getCarByMatricule($oldMatricule);
+                        if ($oldFile['success'] && !empty($oldFile['data'][$field])) {
+                            $oldPath = __DIR__ . '/../' . $oldFile['data'][$field];
+                            if (file_exists($oldPath)) {
+                                unlink($oldPath);
+                            }
+                        }
+
+                        // Déplacer le nouveau fichier
+                        if (move_uploaded_file($file['tmp_name'], $targetPath)) {
+                            $data[$field] = 'uploads/cars/' . $folder . '/' . $fileName;
+                        } else {
+                            throw new Exception("Erreur lors du téléchargement du fichier $field");
+                        }
+                    }
+                }
+            }
+
+            $query = "UPDATE cars SET 
+                matricule = :new_matricule,
+                marque = :marque,
+                ville = :ville,
+                chauffeurs_id = :chauffeurs_id,";
+
+            // Ajouter les champs de fichiers seulement s'ils sont présents dans $data
+            foreach ($fileFields as $field => $folder) {
+                if (isset($data[$field])) {
+                    $query .= " $field = :$field,";
+                }
+            }
+
+            $query .= "
+                date_expiration_carte_grise = :date_expiration_carte_grise,
+                date_expiration_visite = :date_expiration_visite,
+                date_expiration_assurance = :date_expiration_assurance,
+                date_expiration_vignette = :date_expiration_vignette,
+                date_expiration_circulation = :date_expiration_circulation,
+                date_expiration_extincteur = :date_expiration_extincteur,
+                date_expiration_tachygraphe = :date_expiration_tachygraphe,
+                status = :status
+                WHERE matricule = :old_matricule";
+
+            $stmt = $this->conn->prepare($query);
+
+            // Bind les paramètres
+            $stmt->bindParam(':old_matricule', $oldMatricule);
+            $stmt->bindParam(':new_matricule', $data['matricule']);
+            $stmt->bindParam(':marque', $data['marque']);
+            $stmt->bindParam(':ville', $data['ville']);
+            $stmt->bindParam(':chauffeurs_id', $data['chauffeurs_id']);
+            $stmt->bindParam(':date_expiration_carte_grise', $data['date_expiration_carte_grise']);
+            $stmt->bindParam(':date_expiration_visite', $data['date_expiration_visite']);
+            $stmt->bindParam(':date_expiration_assurance', $data['date_expiration_assurance']);
+            $stmt->bindParam(':date_expiration_vignette', $data['date_expiration_vignette']);
+            $stmt->bindParam(':date_expiration_circulation', $data['date_expiration_circulation']);
+            $stmt->bindParam(':date_expiration_extincteur', $data['date_expiration_extincteur']);
+            $stmt->bindParam(':date_expiration_tachygraphe', $data['date_expiration_tachygraphe']);
+            $stmt->bindParam(':status', $data['status']);
+
+            // Bind les paramètres de fichiers s'ils sont présents
+            foreach ($fileFields as $field => $folder) {
+                if (isset($data[$field])) {
+                    $stmt->bindParam(":$field", $data[$field]);
+                }
+            }
+
+            if($stmt->execute()) {
+                return [
+                    'success' => true,
+                    'message' => 'Voiture mise à jour avec succès'
+                ];
+            }
+
+            return [
+                'success' => false,
+                'message' => 'Erreur lors de la mise à jour de la voiture'
+            ];
+
+        } catch(Exception $e) {
+            return [
+                'success' => false,
+                'message' => 'Erreur: ' . $e->getMessage()
+            ];
+        }
+    }
+
+    // Pour supprimer une voiture
+    public function deleteCar($matricule) {
+        try {
+            $query = "DELETE FROM cars WHERE matricule = :matricule";
+            $stmt = $this->conn->prepare($query);
+            $stmt->bindParam(':matricule', $matricule);
+
+            if($stmt->execute()) {
+                return [
+                    'success' => true,
+                    'message' => 'Voiture supprimée avec succès'
+                ];
+            }
+
+            return [
+                'success' => false,
+                'message' => 'Erreur lors de la suppression de la voiture'
+            ];
+
+        } catch(PDOException $e) {
+            return [
+                'success' => false,
+                'message' => 'Erreur: ' . $e->getMessage()
+            ];
+        }
+    }
 }

@@ -2,7 +2,7 @@
 class User{
     protected $pdo;
     protected $id;
-    protected $username;
+    protected $full_name;
     protected $email;
     protected $password;
     protected $role;
@@ -22,7 +22,7 @@ class User{
             $stmt->execute([$this->id]);
             $user = $stmt->fetch();
             if ($user) {
-                $this->username = $user['username'];
+                $this->full_name = $user['full_name'];
                 $this->email = $user['email'];
                 $this->role = $user['role'];
             }
@@ -30,7 +30,7 @@ class User{
     }
     // getters 
     public function getId(){ return $this->id;} 
-    public function getUsername(){ return $this->username;} 
+    public function getfull_name(){ return $this->full_name;} 
     public function getEmail(){ return $this->email;} 
     public function getPassword(){ return $this->password;} 
     public function getRole(){ return $this->role;}
@@ -38,7 +38,7 @@ class User{
     // setters
 
     public function setId($id) { $this->id = $id;}
-    public function setUsername($username) { $this->username = $username;}
+    public function setfull_name($full_name) { $this->full_name = $full_name;}
     public function setEmail($email) { $this->email = $email;}
     public function setPassword($password) { $this->password = $password;}
     public function setRole($role) { $this->role = $role;}
@@ -51,12 +51,12 @@ class User{
 
         if ($user) {
             $_SESSION['user_id'] = $user['id'];
-            $_SESSION['username'] = $user['username'];
+            $_SESSION['full_name'] = $user['full_name'];
             $_SESSION['role'] = $user['role'];
             
             // Mettre à jour les propriétés de l'objet
             $this->id = $user['id'];
-            $this->username = $user['username'];
+            $this->full_name = $user['full_name'];
             $this->email = $user['email'];
             $this->role = $user['role'];
             
@@ -66,13 +66,13 @@ class User{
     }
 
     // fonction pour creer un utilisateur 
-    public function createUser($username, $email, $password, $role) {
+    public function createUser($full_name, $email, $password, $role) {
         try {
             // Préparer la requête
             $stmt = $this->pdo->prepare("INSERT INTO utilisateur (full_name, email, password, role) VALUES (?, ?, ?, ?)");
             
             // Exécuter la requête
-            $result = $stmt->execute([$username, $email, $password, $role]);
+            $result = $stmt->execute([$full_name, $email, $password, $role]);
             
             if ($result) {
                 return [
@@ -103,10 +103,10 @@ class User{
         }
     }
     // pour modifier utilisateur
-    public function updateUser($userId, $username, $email, $role, $password = null) {
+    public function updateUser($userId, $full_name, $email, $role, $password = null) {
         try {
             // Log des données reçues
-            error_log("updateUser called with - ID: $userId, Username: $username, Email: $email, Role: $role");
+            error_log("updateUser called with - ID: $userId, full_name: $full_name, Email: $email, Role: $role");
 
             // Vérifier si l'utilisateur existe
             $checkStmt = $this->pdo->prepare("SELECT id FROM utilisateur WHERE id = ?");
@@ -133,10 +133,10 @@ class User{
             // Préparer la requête SQL en fonction de la présence ou non d'un nouveau mot de passe
             if ($password !== null) {
                 $stmt = $this->pdo->prepare("UPDATE utilisateur SET full_name = ?, email = ?, role = ?, password = ? WHERE id = ?");
-                $result = $stmt->execute([$username, $email, $role, $password, $userId]);
+                $result = $stmt->execute([$full_name, $email, $role, $password, $userId]);
             } else {
                 $stmt = $this->pdo->prepare("UPDATE utilisateur SET full_name = ?, email = ?, role = ? WHERE id = ?");
-                $result = $stmt->execute([$username, $email, $role, $userId]);
+                $result = $stmt->execute([$full_name, $email, $role, $userId]);
             }
             
             if ($result) {

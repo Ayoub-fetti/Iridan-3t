@@ -1,6 +1,7 @@
 <?php
 require_once '../../config/Database.php';
 require_once '../../models/user.php';
+session_start();
 
 // Débogage des chemins
 error_log("Current script path: " . __FILE__);
@@ -52,7 +53,7 @@ $users = $user->getAllUsers();
    <!-- Sidebar -->
    <div class="w-64 bg-white h-screen shadow-md">
     <div class="p-6">
-     <h1 class="text-2xl font-bold">Bienvenue Admin</h1>
+     <h1 class="text-2xl font-bold">Bienvenue Admin  </h1>
     </div>
     <nav class="mt-6">
      <ul>
@@ -62,12 +63,6 @@ $users = $user->getAllUsers();
          Tableau de bord
        </a>
       </li>
-      <!-- <li>
-       <a href="admin_users.php" class="flex items-center px-6 py-2 text-gray-700 hover:bg-gray-200 <?php echo basename($_SERVER['PHP_SELF']) === 'admin_users.php' ? 'bg-gray-200' : ''; ?>">
-         <i class="fas fa-users mr-2"></i>
-         Utilisateurs
-       </a>
-      </li> -->
       <li>
        <a href="admin_stat.php" class="flex items-center px-6 py-2 text-gray-700 hover:bg-gray-200 <?php echo basename($_SERVER['PHP_SELF']) === 'admin_stat.php' ? 'bg-gray-200' : ''; ?>">
          <i class="fas fa-chart-line mr-2"></i>
@@ -98,9 +93,10 @@ $users = $user->getAllUsers();
       <table class="min-w-full divide-y divide-gray-200">
         <thead class="bg-gray-50">
           <tr>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+           
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nom d'utilisateur</th>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Password</th>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rôle</th>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
           </tr>
@@ -108,15 +104,21 @@ $users = $user->getAllUsers();
         <tbody class="bg-white divide-y divide-gray-200">
           <?php foreach ($users as $user): ?>
           <tr>
-            <td class="px-6 py-4 whitespace-nowrap"><?php echo htmlspecialchars($user['id']); ?></td>
+          
             <td class="px-6 py-4 whitespace-nowrap"><?php echo htmlspecialchars($user['full_name']); ?></td>
             <td class="px-6 py-4 whitespace-nowrap"><?php echo htmlspecialchars($user['email']); ?></td>
+            <?php if ($user['role'] == 'admin'): ?>
+              <td class="px-6 py-4 whitespace-nowrap">••••••••</td>
+              <?php endif; ?>
+              <?php if ($user['role'] !== 'admin'): ?>
+              <td class="px-6 py-4 whitespace-nowrap"><?php echo htmlspecialchars($user['password']); ?></td>
+            <?php endif; ?>
             <td class="px-6 py-4 whitespace-nowrap"><?php echo htmlspecialchars($user['role']); ?></td>
             <td class="px-6 py-4 whitespace-nowrap">
+              <?php if ($user['role'] !== 'admin'): ?>
               <button onclick='openEditModal(<?php echo json_encode($user); ?>)' class="text-blue-600 hover:text-blue-800 mr-2">
                 <i class="fas fa-edit"></i>
               </button>
-              <?php if ($user['role'] !== 'admin'): ?>
               <button onclick="confirmDelete(<?php echo $user['id']; ?>)" class="text-red-600 hover:text-red-800">
                 <i class="fas fa-trash"></i>
               </button>

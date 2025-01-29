@@ -1,11 +1,74 @@
 <?php
-require_once __DIR__ . '/../../config/Database.php';
 require_once __DIR__ . '/../../models/fonctionnaire.php';
+require_once __DIR__ . '/../../config/Database.php';
+session_start();
+
+// Vérifier si l'utilisateur est connecté
+if (!isset($_SESSION['user_id'])) {
+    header('Location: ../auth/login.php');
+    exit();
+}
+
+$fonctionnaire = new Fonctionnaire();
+$message = '';
+$success = true;
+
+// Traitement des actions
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (isset($_POST['action'])) {
+        switch ($_POST['action']) {
+            case 'create':
+                $result = $fonctionnaire->createUser(
+                    $_POST['full_name'],
+                    $_POST['email'],
+                    $_POST['password'],
+                    $_POST['role']
+                );
+                if ($result['success']) {
+                    $message = $result['message'];
+                    $success = true;
+                } else {
+                    $message = $result['message'];
+                    $success = false;
+                }
+                break;
+
+            case 'edit':
+                $result = $fonctionnaire->updateUser(
+                    $_POST['id'],
+                    $_POST['full_name'],
+                    $_POST['email'],
+                    $_POST['password'],
+                    $_POST['role']
+                );
+                if ($result['success']) {
+                    $message = $result['message'];
+                    $success = true;
+                } else {
+                    $message = $result['message'];
+                    $success = false;
+                }
+                break;
+
+            case 'delete':
+                if (isset($_POST['id'])) {
+                    $result = $fonctionnaire->deleteUser($_POST['id']);
+                    if ($result['success']) {
+                        $message = $result['message'];
+                        $success = true;
+                    } else {
+                        $message = $result['message'];
+                        $success = false;
+                    }
+                }
+                break;
+        }
+    }
+}
 
 // Initialiser la connexion à la base de données
 $database = new Database();
 $db = $database->connect();
-$fonctionnaire = new Fonctionnaire();
 ?>
 
 <html lang="fr">
@@ -92,6 +155,12 @@ $fonctionnaire = new Fonctionnaire();
                         <a href="gestion_users.php" class="flex items-center px-6 py-2 text-gray-700 bg-gray-200">
                             <i class="fas fa-users mr-2"></i>
                             Personnel
+                        </a>
+                    </li>
+                    <li>
+                        <a href="gestion_cars.php" class="flex items-center px-6 py-2 text-gray-700 hover:bg-gray-200">
+                            <i class="fas fa-users mr-2"></i>
+                             Véhicule
                         </a>
                     </li>
                     <li>
