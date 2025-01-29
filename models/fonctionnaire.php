@@ -132,4 +132,57 @@ class Fonctionnaire {
             ];
         }
     }
+
+    // Pour mettre à jour un personnel
+    public function updatePersonnel($id, $data) {
+        try {
+            $setFields = [];
+            $params = [':id' => $id];
+
+            // Liste des champs possibles
+            $allowedFields = [
+                'nom_complet', 'carte_identite', 'date_expiration_carte', 
+                'role', 'situation_familiale', 'ville', 'adresse', 
+                'contrat', 'date_embauche', 'date_demission', 
+                'permit_conduire', 'date_expiration_permit', 
+                'visite_medicale', 'date_expiration_visite', 'photo'
+            ];
+
+            // Construire la requête dynamiquement
+            foreach ($data as $key => $value) {
+                if (in_array($key, $allowedFields) && $key !== 'id') {
+                    $setFields[] = "$key = :$key";
+                    $params[":$key"] = $value;
+                }
+            }
+
+            if (empty($setFields)) {
+                return [
+                    'success' => false,
+                    'message' => 'Aucun champ à mettre à jour'
+                ];
+            }
+
+            $query = "UPDATE personnel SET " . implode(', ', $setFields) . " WHERE id = :id";
+            $stmt = $this->conn->prepare($query);
+
+            if($stmt->execute($params)) {
+                return [
+                    'success' => true,
+                    'message' => 'Personnel mis à jour avec succès'
+                ];
+            }
+
+            return [
+                'success' => false,
+                'message' => 'Erreur lors de la mise à jour du personnel'
+            ];
+
+        } catch(PDOException $e) {
+            return [
+                'success' => false,
+                'message' => 'Erreur: ' . $e->getMessage()
+            ];
+        }
+    }
 }

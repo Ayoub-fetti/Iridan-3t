@@ -185,7 +185,7 @@ $fonctionnaire = new Fonctionnaire();
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
 
-                                        <a href="#" class="text-green-600 hover:text-green-900 mr-2" title="Modifier">
+                                        <a href="#" class="text-green-600 hover:text-green-900 mr-2" onclick="openEditModal(<?php echo htmlspecialchars($person['id']); ?>)" title="Modifier">
                                             <i class="fas fa-edit"></i>
                                         </a>
                                         <a href="#" onclick="deletePersonnel(<?php echo htmlspecialchars($person['id'] ?? ''); ?>)" class="text-red-600 hover:text-red-900" title="Supprimer">
@@ -313,6 +313,87 @@ $fonctionnaire = new Fonctionnaire();
         </div>
     </div>
 
+    <!-- Modal de modification -->
+    <div id="editPersonnelModal" class="modal">
+        <div class="modal-content">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-semibold">Modifier un membre du personnel</h3>
+                <button onclick="closeEditModal()" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="editPersonnelForm" class="grid grid-cols-2 gap-4">
+                <input type="hidden" name="id" id="edit_id">
+                <div class="col-span-2">
+                    <label class="block text-sm font-medium text-gray-700">Nom Complet</label>
+                    <input type="text" name="nom_complet" id="edit_nom_complet" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">CIN</label>
+                    <input type="text" name="cin" id="edit_cin" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Photo</label>
+                    <input type="file" name="photo" id="edit_photo" accept="image/*,.pdf" class="mt-1 block w-full">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Diplôme</label>
+                    <input type="file" name="diplome" id="edit_diplome" accept=".pdf" class="mt-1 block w-full">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">CV</label>
+                    <input type="file" name="cv" id="edit_cv" accept=".pdf" class="mt-1 block w-full">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Contrat</label>
+                    <input type="file" name="contrat" id="edit_contrat" accept=".pdf" class="mt-1 block w-full">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Visite médicale</label>
+                    <input type="file" name="visite_medicale" id="edit_visite_medicale" accept=".pdf" class="mt-1 block w-full">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Date de naissance</label>
+                    <input type="date" name="date_naissance" id="edit_date_naissance" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Lieu de naissance</label>
+                    <input type="text" name="lieu_naissance" id="edit_lieu_naissance" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Situation familiale</label>
+                    <select name="situation_familiale" id="edit_situation_familiale" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                        <option value="Célibataire">Célibataire</option>
+                        <option value="Marié(e)">Marié(e)</option>
+                        <option value="Divorcé(e)">Divorcé(e)</option>
+                        <option value="Veuf(ve)">Veuf(ve)</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Nombre d'enfants</label>
+                    <input type="number" name="nombre_enfants" id="edit_nombre_enfants" min="0" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Date de recrutement</label>
+                    <input type="date" name="date_recrutement" id="edit_date_recrutement" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Date d'affectation</label>
+                    <input type="date" name="date_affectation" id="edit_date_affectation" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Date d'expiration visite</label>
+                    <input type="date" name="date_expiration_visite" id="edit_date_expiration_visite" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                </div>
+                <div class="col-span-2">
+                    <button type="submit" class="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                        Mettre à jour
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <!-- SweetAlert2 -->
@@ -415,6 +496,71 @@ $fonctionnaire = new Fonctionnaire();
                 }
             });
         }
+
+        // Fonction pour ouvrir le modal de modification
+        window.openEditModal = function(id) {
+            // Récupérer les données de la ligne
+            const row = $(`tr[data-id="${id}"]`);
+            
+            // Remplir le formulaire avec les données existantes
+            $('#edit_id').val(id);
+            $('#edit_nom_complet').val(row.find('td:eq(1)').text().trim());
+            $('#edit_cin').val(row.find('td:eq(2)').text().trim());
+            $('#edit_date_naissance').val(row.find('td:eq(3)').text().trim());
+            $('#edit_lieu_naissance').val(row.find('td:eq(4)').text().trim());
+            $('#edit_situation_familiale').val(row.find('td:eq(5)').text().trim());
+            $('#edit_nombre_enfants').val(row.find('td:eq(6)').text().trim());
+            $('#edit_date_recrutement').val(row.find('td:eq(7)').text().trim());
+            $('#edit_date_affectation').val(row.find('td:eq(8)').text().trim());
+            $('#edit_date_expiration_visite').val(row.find('td:eq(9)').text().trim());
+            
+            // Afficher le modal
+            $('#editPersonnelModal').show();
+        }
+
+        // Fonction pour fermer le modal de modification
+        window.closeEditModal = function() {
+            $('#editPersonnelModal').hide();
+        }
+
+        // Gérer la soumission du formulaire de modification
+        $('#editPersonnelForm').on('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            
+            $.ajax({
+                url: '../../controllers/personnel/update.php',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(response) {
+                    if (response.success) {
+                        Swal.fire({
+                            title: 'Succès!',
+                            text: 'Personnel mis à jour avec succès',
+                            icon: 'success'
+                        }).then(() => {
+                            location.reload();
+                        });
+                    } else {
+                        Swal.fire({
+                            title: 'Erreur!',
+                            text: response.message || 'Une erreur est survenue',
+                            icon: 'error'
+                        });
+                    }
+                },
+                error: function() {
+                    Swal.fire({
+                        title: 'Erreur!',
+                        text: 'Une erreur est survenue',
+                        icon: 'error'
+                    });
+                }
+            });
+        });
     </script>
 </body>
 </html>
