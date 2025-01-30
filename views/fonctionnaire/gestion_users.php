@@ -64,7 +64,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     'date_expiration_visite' => $_POST['date_expiration_visite'] ?? null,
                     'photo' => $_POST['photo'] ?? ''
                 ];
-                $result = $fonctionnaire->updatePersonnel($data);
+                $result = $fonctionnaire->updatePersonnel($id,$data);
                 if ($result['success']) {
                     $message = $result['message'];
                     $success = true;
@@ -171,7 +171,7 @@ $db = $database->connect();
         <!-- Sidebar -->
         <div class="w-64 bg-white h-screen shadow-md">
             <div class="p-6">
-                <h1 class="text-2xl font-bold">Gestion RH</h1>
+                <h1 class="text-2xl font-bold">Gestion Administrative</h1>
             </div>
             <nav class="mt-6">
                 <ul>
@@ -183,12 +183,19 @@ $db = $database->connect();
                     </li>
                     <li>
                         <a href="gestion_cars.php" class="flex items-center px-6 py-2 text-gray-700 hover:bg-gray-200">
-                            <i class="fas fa-users mr-2"></i>
+                        <i class="fas fa-bus mr-2"></i>
                              Véhicule
                         </a>
                     </li>
                     <li>
+                        <a href="accidents.php" class="flex items-center px-6 py-2 text-gray-700 hover:bg-gray-200">
+                        <i class="fas fa-car-crash mr-2"></i>
+                            Collision
+                        </a>
+                    </li>
+                    <li>
                         <a href="../auth/logout.php" class="flex items-center px-6 py-2 text-gray-700 hover:bg-red-200">
+                            <!-- <i class="fas fa-sign-out-alt mr-2"></i> -->
                             <i class="fas fa-sign-out-alt mr-2"></i>
                             Déconnexion
                         </a>

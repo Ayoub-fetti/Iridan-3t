@@ -37,34 +37,6 @@ $car = $result['data'];
 </head>
 <body class="bg-gray-100">
     <div class="flex">
-        <!-- Sidebar -->
-        <div class="w-64 bg-white h-screen shadow-md">
-            <div class="p-6">
-                <h1 class="text-2xl font-bold">Gestion RH</h1>
-            </div>
-            <nav class="mt-6">
-                <ul>
-                    <li>
-                        <a href="gestion_users.php" class="flex items-center px-6 py-2 text-gray-700 hover:bg-gray-200">
-                            <i class="fas fa-users mr-2"></i>
-                            Personnel
-                        </a>
-                    </li>
-                    <li>
-                        <a href="gestion_cars.php" class="flex items-center px-6 py-2 text-gray-700 bg-gray-200">
-                            <i class="fas fa-car mr-2"></i>
-                            Véhicule
-                        </a>
-                    </li>
-                    <li>
-                        <a href="../auth/logout.php" class="flex items-center px-6 py-2 text-gray-700 hover:bg-red-200">
-                            <i class="fas fa-sign-out-alt mr-2"></i>
-                            Déconnexion
-                        </a>
-                    </li>
-                </ul>
-            </nav>
-        </div>
 
         <!-- Main Content -->
         <div class="flex-1 p-10">
@@ -174,10 +146,7 @@ $car = $result['data'];
 
                 <!-- Actions -->
                 <div class="mt-8 flex space-x-4">
-                    <button onclick="openEditModal('<?php echo htmlspecialchars($car['matricule']); ?>')" 
-                            class="bg-yellow-500 text-white px-4 py-2 rounded-md hover:bg-yellow-600">
-                        <i class="fas fa-edit mr-2"></i>Modifier
-                    </button>
+
                     <button onclick="deleteCar('<?php echo htmlspecialchars($car['matricule']); ?>')" 
                             class="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600">
                         <i class="fas fa-trash mr-2"></i>Supprimer
