@@ -100,9 +100,18 @@ $chauffeurs = $fonctionnaire->getAllPersonnel()['data'] ?? [];
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 256px;
+            height: 100vh;
+            z-index: 1000;
+        }
         .main-content {
-            margin-left: 250px;
+            margin-left: 256px;
             padding: 20px;
+            width: calc(100% - 256px);
         }
         .user-info {
             padding: 20px;
@@ -112,20 +121,20 @@ $chauffeurs = $fonctionnaire->getAllPersonnel()['data'] ?? [];
     </style>
 </head>
 <body>
-<div class="w-64 bg-white h-screen shadow-md">
+<div class="sidebar bg-white shadow-md">
             <div class="p-6">
                 <h1 class="text-2xl font-bold">Gestion RH</h1>
             </div>
             <nav class="mt-6">
                 <ul>
                     <li>
-                        <a href="gestion_users.php" class="flex items-center px-6 py-2 text-gray-700 bg-gray-200">
+                        <a href="gestion_users.php" class="flex items-center px-6 py-2 text-gray-700 hover:bg-gray-200">
                             <i class="fas fa-users mr-2"></i>
                             Personnel
                         </a>
                     </li>
                     <li>
-                        <a href="gestion_cars.php" class="flex items-center px-6 py-2 text-gray-700 hover:bg-gray-200">
+                        <a href="gestion_cars.php" class="flex items-center px-6 py-2 text-gray-700 bg-gray-200">
                             <i class="fas fa-users mr-2"></i>
                              Véhicule
                         </a>
@@ -142,7 +151,7 @@ $chauffeurs = $fonctionnaire->getAllPersonnel()['data'] ?? [];
 
 
     <!-- Main Content -->
-    <div class="main-content">
+     <div class="main-content">
         <div class="container-fluid">
             <div class="row mb-4">
                 <div class="col">
@@ -218,7 +227,7 @@ $chauffeurs = $fonctionnaire->getAllPersonnel()['data'] ?? [];
                 </div>
             </div>
         </div>
-    </div>
+    </div> 
 
     <!-- Modal Ajout Voiture -->
     <div class="modal fade" id="addCarModal" tabindex="-1">
@@ -338,7 +347,7 @@ $chauffeurs = $fonctionnaire->getAllPersonnel()['data'] ?? [];
                 </div>
             </div>
         </div>
-    </div>
+    </div> 
 
     <!-- Modal Modification Voiture -->
     <div class="modal fade" id="editCarModal" tabindex="-1">
@@ -479,6 +488,7 @@ $chauffeurs = $fonctionnaire->getAllPersonnel()['data'] ?? [];
             </div>
         </div>
     </div>
+
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>

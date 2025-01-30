@@ -18,12 +18,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['action'])) {
         switch ($_POST['action']) {
             case 'create':
-                $result = $fonctionnaire->createUser(
-                    $_POST['full_name'],
-                    $_POST['email'],
-                    $_POST['password'],
-                    $_POST['role']
-                );
+                $data = [
+                    'nom_complet' => $_POST['nom_complet'] ?? '',
+                    'carte_identite' => $_POST['carte_identite'] ?? '',
+                    'date_expiration_carte' => $_POST['date_expiration_carte'] ?? null,
+                    'role' => $_POST['role'] ?? '',
+                    'situation_familiale' => $_POST['situation_familiale'] ?? '',
+                    'ville' => $_POST['ville'] ?? '',
+                    'adresse' => $_POST['adresse'] ?? '',
+                    'contrat' => $_POST['contrat'] ?? '',
+                    'date_embauche' => $_POST['date_embauche'] ?? null,
+                    'date_demission' => $_POST['date_demission'] ?? null,
+                    'permit_conduire' => $_POST['permit_conduire'] ?? '',
+                    'date_expiration_permit' => $_POST['date_expiration_permit'] ?? null,
+                    'visite_medicale' => $_POST['visite_medicale'] ?? '',
+                    'date_expiration_visite' => $_POST['date_expiration_visite'] ?? null,
+                    'photo' => $_POST['photo'] ?? ''
+                ];
+                $result = $fonctionnaire->createPersonnel($data);
                 if ($result['success']) {
                     $message = $result['message'];
                     $success = true;
@@ -34,13 +46,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 break;
 
             case 'edit':
-                $result = $fonctionnaire->updateUser(
-                    $_POST['id'],
-                    $_POST['full_name'],
-                    $_POST['email'],
-                    $_POST['password'],
-                    $_POST['role']
-                );
+                $data = [
+                    'id' => $_POST['id'] ?? '',
+                    'nom_complet' => $_POST['nom_complet'] ?? '',
+                    'carte_identite' => $_POST['carte_identite'] ?? '',
+                    'date_expiration_carte' => $_POST['date_expiration_carte'] ?? null,
+                    'role' => $_POST['role'] ?? '',
+                    'situation_familiale' => $_POST['situation_familiale'] ?? '',
+                    'ville' => $_POST['ville'] ?? '',
+                    'adresse' => $_POST['adresse'] ?? '',
+                    'contrat' => $_POST['contrat'] ?? '',
+                    'date_embauche' => $_POST['date_embauche'] ?? null,
+                    'date_demission' => $_POST['date_demission'] ?? null,
+                    'permit_conduire' => $_POST['permit_conduire'] ?? '',
+                    'date_expiration_permit' => $_POST['date_expiration_permit'] ?? null,
+                    'visite_medicale' => $_POST['visite_medicale'] ?? '',
+                    'date_expiration_visite' => $_POST['date_expiration_visite'] ?? null,
+                    'photo' => $_POST['photo'] ?? ''
+                ];
+                $result = $fonctionnaire->updatePersonnel($data);
                 if ($result['success']) {
                     $message = $result['message'];
                     $success = true;
@@ -52,7 +76,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             case 'delete':
                 if (isset($_POST['id'])) {
-                    $result = $fonctionnaire->deleteUser($_POST['id']);
+                    $result = $fonctionnaire->deletePersonnel($_POST['id']);
                     if ($result['success']) {
                         $message = $result['message'];
                         $success = true;
@@ -398,64 +422,73 @@ $db = $database->connect();
                     <input type="text" name="nom_complet" id="edit_nom_complet" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700">CIN</label>
-                    <input type="text" name="cin" id="edit_cin" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                    <label class="block text-sm font-medium text-gray-700">Carte d'identité (PDF)</label>
+                    <input type="file" name="carte_identite_file" accept=".pdf" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700">Photo</label>
-                    <input type="file" name="photo" id="edit_photo" accept="image/*,.pdf" class="mt-1 block w-full">
+                    <label class="block text-sm font-medium text-gray-700">Date d'expiration CI</label>
+                    <input type="date" name="date_expiration_carte" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700">Diplôme</label>
-                    <input type="file" name="diplome" id="edit_diplome" accept=".pdf" class="mt-1 block w-full">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700">CV</label>
-                    <input type="file" name="cv" id="edit_cv" accept=".pdf" class="mt-1 block w-full">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700">Contrat</label>
-                    <input type="file" name="contrat" id="edit_contrat" accept=".pdf" class="mt-1 block w-full">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700">Visite médicale</label>
-                    <input type="file" name="visite_medicale" id="edit_visite_medicale" accept=".pdf" class="mt-1 block w-full">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700">Date de naissance</label>
-                    <input type="date" name="date_naissance" id="edit_date_naissance" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700">Lieu de naissance</label>
-                    <input type="text" name="lieu_naissance" id="edit_lieu_naissance" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700">Situation familiale</label>
-                    <select name="situation_familiale" id="edit_situation_familiale" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
-                        <option value="Célibataire">Célibataire</option>
-                        <option value="Marié(e)">Marié(e)</option>
-                        <option value="Divorcé(e)">Divorcé(e)</option>
-                        <option value="Veuf(ve)">Veuf(ve)</option>
+                    <label class="block text-sm font-medium text-gray-700">Rôle</label>
+                    <select name="role" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                        <option value="fonctionnaire">Fonctionnaire</option>
+                        <option value="chauffeurs">Chauffeur</option>
+                        <option value="chef de zone">Chef de zone</option>
+                        <option value="chef de site">Chef de site</option>
+                        <option value="menage">Ménage</option>
+                        <option value="securite">Sécurité</option>
                     </select>
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700">Nombre d'enfants</label>
-                    <input type="number" name="nombre_enfants" id="edit_nombre_enfants" min="0" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                    <label class="block text-sm font-medium text-gray-700">Situation Familiale</label>
+                    <select name="situation_familiale" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                        <option value="celibataire">Célibataire</option>
+                        <option value="marier">Marié(e)</option>
+                    </select>
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700">Date de recrutement</label>
-                    <input type="date" name="date_recrutement" id="edit_date_recrutement" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                    <label class="block text-sm font-medium text-gray-700">Ville</label>
+                    <input type="text" name="ville" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700">Date d'affectation</label>
-                    <input type="date" name="date_affectation" id="edit_date_affectation" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                    <label class="block text-sm font-medium text-gray-700">Adresse</label>
+                    <input type="text" name="adresse" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Contrat (PDF)</label>
+                    <input type="file" name="contrat_file" accept=".pdf" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Date d'embauche</label>
+                    <input type="date" name="date_embauche" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Date de démission</label>
+                    <input type="date" name="date_demission" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Permis de conduire (PDF)</label>
+                    <input type="file" name="permit_conduire_file" accept=".pdf" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Date d'expiration permis</label>
+                    <input type="date" name="date_expiration_permit" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Visite médicale (PDF)</label>
+                    <input type="file" name="visite_medicale_file" accept=".pdf" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700">Date d'expiration visite</label>
-                    <input type="date" name="date_expiration_visite" id="edit_date_expiration_visite" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                    <input type="date" name="date_expiration_visite" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
                 </div>
                 <div class="col-span-2">
-                    <button type="submit" class="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                    <label class="block text-sm font-medium text-gray-700">Photo de profil</label>
+                    <input type="file" name="photo" accept="image/*" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                </div>
+                <div class="col-span-2 mt-4">
+                    <button type="submit" class="w-full bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">
                         Mettre à jour
                     </button>
                 </div>
