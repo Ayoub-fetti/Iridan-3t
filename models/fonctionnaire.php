@@ -655,4 +655,24 @@ class Fonctionnaire {
             ];
         }
     }
+
+    // Pour récupérer uniquement les chauffeurs avec les informations essentielles
+    public function getChauffeurs() {
+        try {
+            $query = "SELECT id, nom_complet FROM personnel WHERE role = 'chauffeurs' ORDER BY nom_complet ASC";
+            $stmt = $this->conn->prepare($query);
+            $stmt->execute();
+
+            return [
+                'success' => true,
+                'data' => $stmt->fetchAll(PDO::FETCH_ASSOC)
+            ];
+
+        } catch(PDOException $e) {
+            return [
+                'success' => false,
+                'message' => 'Erreur: ' . $e->getMessage()
+            ];
+        }
+    }
 }
