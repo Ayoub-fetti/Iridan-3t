@@ -13,6 +13,10 @@ $fonctionnaire = new Fonctionnaire();
 $message = '';
 $success = true;
 
+// Récupérer la liste des chauffeurs
+$chauffeurs_result = $fonctionnaire->getChauffeurs();
+$chauffeurs = $chauffeurs_result['success'] ? $chauffeurs_result['data'] : [];
+
 // Traitement des actions
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['action'])) {
@@ -85,8 +89,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-// Récupérer la liste des chauffeurs pour le formulaire
-$chauffeurs = $fonctionnaire->getAllPersonnel()['data'] ?? [];
+// Récupérer la liste des voitures
+$cars = $fonctionnaire->getAllCars();
 ?>
 
 <!DOCTYPE html>
@@ -200,7 +204,6 @@ $chauffeurs = $fonctionnaire->getAllPersonnel()['data'] ?? [];
                         </thead>
                         <tbody class="bg-white divide-y divide-gray-200">
                             <?php
-                            $cars = $fonctionnaire->getAllCars();
                             if ($cars['success'] && !empty($cars['data'])) {
                                 foreach ($cars['data'] as $car) {
                                     $statusClass = match($car['status']) {
