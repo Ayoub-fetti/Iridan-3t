@@ -1,7 +1,7 @@
 <?php
+require_once 'check_admin.php';
 require_once '../../config/Database.php';
 require_once '../../models/user.php';
-session_start();
 
 // Débogage des chemins
 error_log("Current script path: " . __FILE__);
@@ -20,10 +20,13 @@ $users = $user->getAllUsers();
  <head>
   <meta charset="utf-8"/>
   <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-  <title>Analytics Dashboard</title>
+  <title>gestion des utilisateurs</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <style>
    body {
      font-family: 'Roboto', sans-serif;
@@ -53,20 +56,20 @@ $users = $user->getAllUsers();
    <!-- Sidebar -->
    <div class="w-64 bg-white h-screen shadow-md">
     <div class="p-6">
-     <h1 class="text-2xl font-bold">Bienvenue Admin  </h1>
+     <h1 class="text-2xl font-bold">Bienvenue Admin </h1>
     </div>
     <nav class="mt-6">
      <ul>
+       <li>
+        <a href="admin_stat.php" class="flex items-center px-6 py-2 text-gray-700 hover:bg-gray-200 <?php echo basename($_SERVER['PHP_SELF']) === 'admin_stat.php' ? 'bg-gray-200' : ''; ?>">
+          <i class="fas fa-chart-line mr-2"></i>
+          Statistiques
+        </a>
+       </li>
       <li>
-       <a href="admin_dash.php" class="flex items-center px-6 py-2 text-gray-700 hover:bg-gray-200 <?php echo basename($_SERVER['PHP_SELF']) === 'admin_dash.php' ? 'bg-gray-200' : ''; ?>">
-         <i class="fas fa-tachometer-alt mr-2"></i>
-         Tableau de bord
-       </a>
-      </li>
-      <li>
-       <a href="admin_stat.php" class="flex items-center px-6 py-2 text-gray-700 hover:bg-gray-200 <?php echo basename($_SERVER['PHP_SELF']) === 'admin_stat.php' ? 'bg-gray-200' : ''; ?>">
-         <i class="fas fa-chart-line mr-2"></i>
-         Statistiques
+       <a href="admin_dash.php" class="flex items-center px-6 py-2 text-gray-700 bg-gray-200 <?php echo basename($_SERVER['PHP_SELF']) === 'admin_dash.php' ? 'bg-gray-200' : ''; ?>">
+         <i class="fas fa-user-circle mr-2"></i>
+         Authentification
        </a>
       </li>
       <li>
@@ -250,7 +253,11 @@ $users = $user->getAllUsers();
 
       // Valider les données
       if (!userId || !username || !email || !role) {
-        alert('Tous les champs sont requis');
+        Swal.fire({
+          icon: 'error',
+          title: 'Erreur',
+          text: 'Tous les champs sont requis'
+        });
         return;
       }
 
@@ -278,10 +285,21 @@ $users = $user->getAllUsers();
         success: function(response) {
           console.log('Update response:', response);
           if (response.success) {
-            alert('Utilisateur mis à jour avec succès');
-            location.reload();
+            Swal.fire({
+              icon: 'success',
+              title: 'Succès',
+              text: 'Utilisateur mis à jour avec succès',
+              timer: 2000,
+              showConfirmButton: false
+            }).then(() => {
+              location.reload();
+            });
           } else {
-            alert('Erreur: ' + (response.message || 'Erreur inconnue'));
+            Swal.fire({
+              icon: 'error',
+              title: 'Erreur',
+              text: response.message || 'Erreur inconnue'
+            });
           }
         },
         error: function(xhr, status, error) {
@@ -290,13 +308,20 @@ $users = $user->getAllUsers();
           console.error('Status:', xhr.status);
           try {
             const response = JSON.parse(xhr.responseText);
-            alert('Erreur: ' + (response.message || 'Erreur inconnue'));
+            Swal.fire({
+              icon: 'error',
+              title: 'Erreur',
+              text: response.message || 'Erreur inconnue'
+            });
           } catch (e) {
-            alert('Erreur lors de la mise à jour: ' + error);
+            Swal.fire({
+              icon: 'error',
+              title: 'Erreur',
+              text: 'Erreur lors de la mise à jour: ' + error
+            });
           }
         },
         complete: function() {
-          // Réactiver le formulaire
           submitButton.disabled = false;
         }
       });
@@ -307,34 +332,64 @@ $users = $user->getAllUsers();
 
     function confirmDelete(userId) {
       console.log('Confirming delete for user ID:', userId);
-      if (confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ?')) {
-        $.ajax({
-          url: getControllerUrl('delete_user.php'),
-          type: 'POST',
-          data: { id: userId },
-          dataType: 'json',
-          success: function(response) {
-            console.log('Delete response:', response);
-            if (response.success) {
-              alert('Utilisateur supprimé avec succès');
-              location.reload();
-            } else {
-              alert('Erreur: ' + (response.message || 'Erreur inconnue'));
+      Swal.fire({
+        title: 'Êtes-vous sûr?',
+        text: "Cette action est irréversible!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Oui, supprimer!',
+        cancelButtonText: 'Annuler'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          $.ajax({
+            url: getControllerUrl('delete_user.php'),
+            type: 'POST',
+            data: { id: userId },
+            dataType: 'json',
+            success: function(response) {
+              console.log('Delete response:', response);
+              if (response.success) {
+                Swal.fire({
+                  icon: 'success',
+                  title: 'Succès',
+                  text: 'Utilisateur supprimé avec succès',
+                  timer: 2000,
+                  showConfirmButton: false
+                }).then(() => {
+                  location.reload();
+                });
+              } else {
+                Swal.fire({
+                  icon: 'error',
+                  title: 'Erreur',
+                  text: response.message || 'Erreur inconnue'
+                });
+              }
+            },
+            error: function(xhr, status, error) {
+              console.error('Ajax error:', status, error);
+              console.error('Response:', xhr.responseText);
+              console.error('Status:', xhr.status);
+              try {
+                const response = JSON.parse(xhr.responseText);
+                Swal.fire({
+                  icon: 'error',
+                  title: 'Erreur',
+                  text: response.message || 'Erreur inconnue'
+                });
+              } catch (e) {
+                Swal.fire({
+                  icon: 'error',
+                  title: 'Erreur',
+                  text: 'Erreur lors de la suppression: ' + error
+                });
+              }
             }
-          },
-          error: function(xhr, status, error) {
-            console.error('Ajax error:', status, error);
-            console.error('Response:', xhr.responseText);
-            console.error('Status:', xhr.status);
-            try {
-              const response = JSON.parse(xhr.responseText);
-              alert('Erreur: ' + (response.message || 'Erreur inconnue'));
-            } catch (e) {
-              alert('Erreur lors de la suppression: ' + error);
-            }
-          }
-        });
-      }
+          });
+        }
+      });
     }
 
     // Fermer la modale si l'utilisateur clique en dehors
@@ -362,18 +417,29 @@ $users = $user->getAllUsers();
               document.getElementById('createUserModal').style.display = 'none';
               
               // Afficher une alerte de succès
-              alert('Utilisateur créé avec succès!');
-              
-              // Recharger la page
-              setTimeout(function() {
+              Swal.fire({
+                icon: 'success',
+                title: 'Succès',
+                text: 'Utilisateur créé avec succès!',
+                timer: 2000,
+                showConfirmButton: false
+              }).then(() => {
                 location.reload();
-              }, 100);
+              });
             } else {
-              $('#message').html(`<div class="p-4 bg-red-100 text-red-700 rounded-md">${data.message}</div>`);
+              Swal.fire({
+                icon: 'error',
+                title: 'Erreur',
+                text: data.message
+              });
             }
           },
           error: function(xhr, status, error) {
-            $('#message').html(`<div class="p-4 bg-red-100 text-red-700 rounded-md">Erreur de connexion au serveur: ${error}</div>`);
+            Swal.fire({
+              icon: 'error',
+              title: 'Erreur',
+              text: 'Erreur de connexion au serveur: ' + error
+            });
           }
         });
       });
