@@ -510,4 +510,149 @@ class Fonctionnaire {
             ];
         }
     }
+
+    // Pour ajouter un accident
+    public function createAccident($data) {
+        try {
+            $query = "INSERT INTO accidents (
+                cars_id,
+                chauffeurs_id,
+                date_declaration_assurance,
+                `procédure`,
+                status_resolution,
+                commentaire
+            ) VALUES (
+                :cars_id,
+                :chauffeurs_id,
+                :date_declaration_assurance,
+                :procedure,
+                :status_resolution,
+                :commentaire
+            )";
+
+            $stmt = $this->conn->prepare($query);
+
+            // Bind les paramètres
+            $stmt->bindParam(':cars_id', $data['cars_id']);
+            $stmt->bindParam(':chauffeurs_id', $data['chauffeurs_id']);
+            $stmt->bindParam(':date_declaration_assurance', $data['date_declaration_assurance']);
+            $stmt->bindParam(':procedure', $data['procedure']);
+            $stmt->bindParam(':status_resolution', $data['status_resolution']);
+            $stmt->bindParam(':commentaire', $data['commentaire']);
+
+            if($stmt->execute()) {
+                return [
+                    'success' => true,
+                    'message' => 'Accident enregistré avec succès',
+                    'id' => $this->conn->lastInsertId()
+                ];
+            }
+
+            return [
+                'success' => false,
+                'message' => 'Erreur lors de l\'enregistrement de l\'accident'
+            ];
+
+        } catch(PDOException $e) {
+            return [
+                'success' => false,
+                'message' => 'Erreur: ' . $e->getMessage()
+            ];
+        }
+    }
+
+    // Pour récupérer tous les accidents
+    public function getAllAccidents() {
+        try {
+            $query = "SELECT a.*, c.matricule as matricule_vehicule, p.nom_complet as nom_chauffeur 
+                     FROM accidents a 
+                     LEFT JOIN cars c ON a.cars_id = c.matricule 
+                     LEFT JOIN personnel p ON a.chauffeurs_id = p.id 
+                     ORDER BY date_declaration_assurance DESC";
+
+            $stmt = $this->conn->prepare($query);
+            $stmt->execute();
+
+            return [
+                'success' => true,
+                'data' => $stmt->fetchAll(PDO::FETCH_ASSOC)
+            ];
+
+        } catch(PDOException $e) {
+            return [
+                'success' => false,
+                'message' => 'Erreur: ' . $e->getMessage()
+            ];
+        }
+    }
+
+    // Pour supprimer un accident
+    public function deleteAccident($id) {
+        try {
+            $query = "DELETE FROM accidents WHERE id = :id";
+            $stmt = $this->conn->prepare($query);
+            $stmt->bindParam(':id', $id);
+
+            if($stmt->execute()) {
+                return [
+                    'success' => true,
+                    'message' => 'Accident supprimé avec succès'
+                ];
+            }
+
+            return [
+                'success' => false,
+                'message' => 'Erreur lors de la suppression de l\'accident'
+            ];
+
+        } catch(PDOException $e) {
+            return [
+                'success' => false,
+                'message' => 'Erreur: ' . $e->getMessage()
+            ];
+        }
+    }
+
+    // Pour mettre à jour un accident
+    public function updateAccident($id, $data) {
+        try {
+            $query = "UPDATE accidents SET 
+                cars_id = :cars_id,
+                chauffeurs_id = :chauffeurs_id,
+                date_declaration_assurance = :date_declaration_assurance,
+                `procédure` = :procedure,
+                status_resolution = :status_resolution,
+                commentaire = :commentaire
+                WHERE id = :id";
+
+            $stmt = $this->conn->prepare($query);
+
+            // Bind les paramètres
+            $stmt->bindParam(':id', $id);
+            $stmt->bindParam(':cars_id', $data['cars_id']);
+            $stmt->bindParam(':chauffeurs_id', $data['chauffeurs_id']);
+            $stmt->bindParam(':date_declaration_assurance', $data['date_declaration_assurance']);
+            $stmt->bindParam(':procedure', $data['procedure']);
+            $stmt->bindParam(':status_resolution', $data['status_resolution']);
+            $stmt->bindParam(':commentaire', $data['commentaire']);
+
+            if($stmt->execute()) {
+                return [
+                    'success' => true,
+                    'message' => 'Accident mis à jour avec succès'
+                ];
+            }
+
+            return [
+                'success' => false,
+                'message' => 'Erreur lors de la mise à jour de l\'accident'
+            ];
+
+        } catch(PDOException $e) {
+            return [
+                'success' => false,
+                'message' => 'Erreur: ' . $e->getMessage()
+            ];
+        }
+    }
 }
