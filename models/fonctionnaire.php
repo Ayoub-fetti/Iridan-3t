@@ -136,6 +136,9 @@ class Fonctionnaire {
     // Pour mettre à jour un personnel
     public function updatePersonnel($id, $data) {
         try {
+            error_log("Début de updatePersonnel avec ID: $id");
+            error_log("Données reçues: " . print_r($data, true));
+            
             $setFields = [];
             $params = [':id' => $id];
 
@@ -148,15 +151,21 @@ class Fonctionnaire {
                 'visite_medicale', 'date_expiration_visite', 'photo'
             ];
 
+            error_log("Champs autorisés: " . implode(', ', $allowedFields));
+
             // Construire la requête dynamiquement
             foreach ($data as $key => $value) {
                 if (in_array($key, $allowedFields) && $key !== 'id') {
                     $setFields[] = "$key = :$key";
                     $params[":$key"] = $value;
+                    error_log("Ajout du champ $key avec la valeur: $value");
+                } else {
+                    error_log("Champ ignoré: $key");
                 }
             }
 
             if (empty($setFields)) {
+                error_log("Aucun champ à mettre à jour");
                 return [
                     'success' => false,
                     'message' => 'Aucun champ à mettre à jour'
@@ -164,21 +173,28 @@ class Fonctionnaire {
             }
 
             $query = "UPDATE personnel SET " . implode(', ', $setFields) . " WHERE id = :id";
+            error_log("Requête SQL: " . $query);
+            error_log("Paramètres: " . print_r($params, true));
+
             $stmt = $this->conn->prepare($query);
 
             if($stmt->execute($params)) {
+                error_log("Mise à jour réussie");
                 return [
                     'success' => true,
                     'message' => 'Personnel mis à jour avec succès'
                 ];
             }
 
+            error_log("Échec de la mise à jour");
             return [
                 'success' => false,
                 'message' => 'Erreur lors de la mise à jour du personnel'
             ];
 
         } catch(PDOException $e) {
+            error_log("Erreur PDO: " . $e->getMessage());
+            error_log("Trace: " . $e->getTraceAsString());
             return [
                 'success' => false,
                 'message' => 'Erreur: ' . $e->getMessage()

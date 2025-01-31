@@ -64,7 +64,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     'date_expiration_visite' => $_POST['date_expiration_visite'] ?? null,
                     'photo' => $_POST['photo'] ?? ''
                 ];
-                $result = $fonctionnaire->updatePersonnel($id,$data);
+                $result = $fonctionnaire->updatePersonnel($data['id'], $data);
                 if ($result['success']) {
                     $message = $result['message'];
                     $success = true;
@@ -426,19 +426,19 @@ $db = $database->connect();
                 <input type="hidden" name="id" id="edit_id">
                 <div class="col-span-2">
                     <label class="block text-sm font-medium text-gray-700">Nom Complet</label>
-                    <input type="text" name="nom_complet" id="edit_nom_complet" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                    <input type="text" name="nom_complet" id="nom_complet" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700">Carte d'identité (PDF)</label>
-                    <input type="file" name="carte_identite_file" accept=".pdf" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                    <input type="file" name="carte_identite_file" id="carte_identite_file" accept=".pdf" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700">Date d'expiration CI</label>
-                    <input type="date" name="date_expiration_carte" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                    <input type="date" name="date_expiration_carte" id="date_expiration_carte" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700">Rôle</label>
-                    <select name="role" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                    <select name="role" id="role" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
                         <option value="fonctionnaire">Fonctionnaire</option>
                         <option value="chauffeurs">Chauffeur</option>
                         <option value="chef de zone">Chef de zone</option>
@@ -449,50 +449,50 @@ $db = $database->connect();
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700">Situation Familiale</label>
-                    <select name="situation_familiale" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                    <select name="situation_familiale" id="situation_familiale" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
                         <option value="celibataire">Célibataire</option>
                         <option value="marier">Marié(e)</option>
                     </select>
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700">Ville</label>
-                    <input type="text" name="ville" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                    <input type="text" name="ville" id="ville" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700">Adresse</label>
-                    <input type="text" name="adresse" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                    <input type="text" name="adresse" id="adresse" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700">Contrat (PDF)</label>
-                    <input type="file" name="contrat_file" accept=".pdf" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                    <input type="file" name="contrat_file" id="contrat_file" accept=".pdf" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700">Date d'embauche</label>
-                    <input type="date" name="date_embauche" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                    <input type="date" name="date_embauche" id="date_embauche" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700">Date de démission</label>
-                    <input type="date" name="date_demission" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                    <input type="date" name="date_demission" id="date_demission" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700">Permis de conduire (PDF)</label>
-                    <input type="file" name="permit_conduire_file" accept=".pdf" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                    <input type="file" name="permit_conduire_file" id="permit_conduire_file" accept=".pdf" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700">Date d'expiration permis</label>
-                    <input type="date" name="date_expiration_permit" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                    <input type="date" name="date_expiration_permit" id="date_expiration_permit" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700">Visite médicale (PDF)</label>
-                    <input type="file" name="visite_medicale_file" accept=".pdf" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                    <input type="file" name="visite_medicale_file" id="visite_medicale_file" accept=".pdf" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700">Date d'expiration visite</label>
-                    <input type="date" name="date_expiration_visite" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                    <input type="date" name="date_expiration_visite" id="date_expiration_visite" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
                 </div>
                 <div class="col-span-2">
                     <label class="block text-sm font-medium text-gray-700">Photo de profil</label>
-                    <input type="file" name="photo" accept="image/*" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                    <input type="file" name="photo" id="photo" accept="image/*" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
                 </div>
                 <div class="col-span-2 mt-4">
                     <button type="submit" class="w-full bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">
@@ -613,15 +613,14 @@ $db = $database->connect();
             
             // Remplir le formulaire avec les données existantes
             $('#edit_id').val(id);
-            $('#edit_nom_complet').val(row.find('td:eq(1)').text().trim());
-            $('#edit_cin').val(row.find('td:eq(2)').text().trim());
-            $('#edit_date_naissance').val(row.find('td:eq(3)').text().trim());
-            $('#edit_lieu_naissance').val(row.find('td:eq(4)').text().trim());
-            $('#edit_situation_familiale').val(row.find('td:eq(5)').text().trim());
-            $('#edit_nombre_enfants').val(row.find('td:eq(6)').text().trim());
-            $('#edit_date_recrutement').val(row.find('td:eq(7)').text().trim());
-            $('#edit_date_affectation').val(row.find('td:eq(8)').text().trim());
-            $('#edit_date_expiration_visite').val(row.find('td:eq(9)').text().trim());
+            $('#nom_complet').val(row.find('td:eq(1)').text().trim());
+            $('#role').val(row.find('td:eq(2)').text().trim());
+            $('#situation_familiale').val(row.find('td:eq(3)').text().trim());
+            $('#ville').val(row.find('td:eq(4)').text().trim());
+            $('#adresse').val(row.find('td:eq(5)').text().trim());
+            $('#date_embauche').val(row.find('td:eq(6)').text().trim());
+            $('#date_demission').val(row.find('td:eq(7)').text().trim());
+            $('#date_expiration_visite').val(row.find('td:eq(8)').text().trim());
             
             // Afficher le modal
             $('#editPersonnelModal').show();
@@ -637,6 +636,13 @@ $db = $database->connect();
             e.preventDefault();
             
             const formData = new FormData(this);
+            formData.append('action', 'edit'); // Ajouter l'action 'edit'
+            
+            // Debug des données envoyées
+            console.log('Données envoyées :');
+            for (let pair of formData.entries()) {
+                console.log(pair[0] + ': ' + pair[1]);
+            }
             
             $.ajax({
                 url: '../../controllers/personnel/update.php',
@@ -645,6 +651,7 @@ $db = $database->connect();
                 processData: false,
                 contentType: false,
                 success: function(response) {
+                    console.log('Réponse reçue :', response);
                     if (response.success) {
                         Swal.fire({
                             title: 'Succès!',
@@ -661,10 +668,11 @@ $db = $database->connect();
                         });
                     }
                 },
-                error: function() {
+                error: function(xhr, status, error) {
+                    console.error('Erreur AJAX :', xhr.responseText);
                     Swal.fire({
                         title: 'Erreur!',
-                        text: 'Une erreur est survenue',
+                        text: 'Une erreur est survenue lors de la communication avec le serveur',
                         icon: 'error'
                     });
                 }
