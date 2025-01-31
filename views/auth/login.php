@@ -6,7 +6,7 @@ session_start();
 
 // Si l'utilisateur est déjà connecté, le rediriger selon son rôle
 if (isset($_SESSION['user_id'])) {
-    if ($_SESSION['role'] === 'admin') {
+    if ($_SESSION['role'] === 'admin_principale') {
         header('Location: ../admin/admin_stat.php');
     } elseif ($_SESSION['role'] === 'fonctionnaire') {
         header('Location: ../fonctionnaire/iridan_dash.php');
@@ -28,7 +28,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $user = new User($db);
 
         if ($user->login($email, $password)) {
-            if ($_SESSION['role'] === 'admin') {
+            if ($_SESSION['role'] === 'admin_principale') {
                 header('Location: ../admin/admin_stat.php');
             } elseif ($_SESSION['role'] === 'fonctionnaire') {
                 header('Location: ../fonctionnaire/gestion_users.php');

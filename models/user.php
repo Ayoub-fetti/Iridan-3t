@@ -184,7 +184,7 @@ class User{
             }
 
             // Empêcher la suppression des administrateurs
-            if ($user['role'] === 'admin') {
+            if ($user['role'] === 'admin_principale') {
                 return [
                     'success' => false,
                     'message' => 'Impossible de supprimer un compte administrateur'
@@ -211,6 +211,47 @@ class User{
                 'success' => false,
                 'message' => 'Erreur lors de la suppression de l\'utilisateur'
             ];
+        }
+    }
+
+    // Statistiques
+    public function getTotalUsers() {
+        try {
+            $stmt = $this->pdo->query("SELECT COUNT(*) as total FROM utilisateur");
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            return $result['total'];
+        } catch (PDOException $e) {
+            return 0;
+        }
+    }
+
+    public function getTotalPersonnel() {
+        try {
+            $stmt = $this->pdo->query("SELECT COUNT(*) as total FROM personnel");
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            return $result['total'];
+        } catch (PDOException $e) {
+            return 0;
+        }
+    }
+
+    public function getTotalVehicules() {
+        try {
+            $stmt = $this->pdo->query("SELECT COUNT(*) as total FROM cars");
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            return $result['total'];
+        } catch (PDOException $e) {
+            return 0;
+        }
+    }
+
+    public function getTotalAccidents() {
+        try {
+            $stmt = $this->pdo->query("SELECT COUNT(*) as total FROM accidents");
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            return $result['total'];
+        } catch (PDOException $e) {
+            return 0;
         }
     }
 }

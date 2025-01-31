@@ -64,7 +64,7 @@ $totalAccidents = $user->getTotalAccidents();
                 <!-- Carte Utilisateurs -->
                 <div class="bg-white rounded-lg shadow-lg p-6 transform hover:scale-105 transition-transform duration-200">
                     <div class="flex items-center justify-between mb-4">
-                        <div class="text-xl font-semibold text-gray-700">Utilisateurs</div>
+                        <div class="text-xl font-semibold text-gray-700">Comptes</div>
                         <div class="p-3 bg-blue-100 rounded-full">
                             <i class="fas fa-users text-blue-500"></i>
                         </div>
@@ -76,13 +76,13 @@ $totalAccidents = $user->getTotalAccidents();
                 <!-- Carte Personnel -->
                 <div class="bg-white rounded-lg shadow-lg p-6 transform hover:scale-105 transition-transform duration-200">
                     <div class="flex items-center justify-between mb-4">
-                        <div class="text-xl font-semibold text-gray-700">Personnel</div>
+                        <div class="text-xl font-semibold text-gray-700">Personnels</div>
                         <div class="p-3 bg-green-100 rounded-full">
                             <i class="fas fa-user-tie text-green-500"></i>
                         </div>
                     </div>
                     <div class="text-3xl font-bold text-gray-800"><?php echo $totalPersonnel; ?></div>
-                    <div class="text-sm text-gray-500 mt-2">Membres du personnel</div>
+                    <div class="text-sm text-gray-500 mt-2">Total  des personnels</div>
                 </div>
 
                 <!-- Carte Véhicules -->
@@ -111,12 +111,13 @@ $totalAccidents = $user->getTotalAccidents();
             </div>
             <!-- Message de bienvenue -->
                 <div class="mt-12 bg-white rounded-lg shadow-lg p-8">
-                    <h3 class="text-2xl font-bold text-gray-800 mb-4">Bienvenue sur la plateforme d'administration !</h3>
+                    <h3 class="text-2xl font-bold text-gray-800 mb-4">Bienvenue sur la plateforme d'administration IridanParc !</h3>
                     <p class="text-gray-600 leading-relaxed">
-                        En tant qu'administrateur, vous avez un rôle essentiel dans la gestion des utilisateurs et le bon fonctionnement du système. 
-                        Une fois connecté, vous pouvez créer des comptes pour les fonctionnaires de l'administration afin de leur donner accès aux fonctionnalités de la plateforme. 
-                        Vous avez aussi la possibilité de modifier ou de supprimer des comptes existants selon les besoins. De plus, un tableau de bord détaillé vous permet de consulter des statistiques globales pour suivre l'activité et optimiser la gestion. 
-                        Votre rôle est clé pour assurer une administration efficace et sécurisée. Bonne gestion !
+                    En tant qu'administrateur, vous avez un rôle essentiel dans la gestion des utilisateurs et le bon fonctionnement du système.
+                    Une fois connecté, vous pouvez créer des comptes pour les fonctionnaires de l'administration afin de leur donner accès aux fonctionnalités de la plateforme.
+                    Vous avez aussi la possibilité de modifier ou de supprimer des comptes existants selon les besoins. De plus, un tableau de bord détaillé vous permet de consulter des statistiques globales pour suivre l'activité et optimiser la gestion.
+                   <br> Cependant, en tant qu'administrateur, vous ne pouvez pas accéder aux fonctionnalités de la plateforme. Toutefois, vous avez la possibilité de créer un compte avec le rôle de fonctionnaire pour bénéficier d'une meilleure expérience et d'un traitement optimisé du système.
+                    Votre rôle est clé pour assurer une administration efficace et sécurisée. Bonne gestion !
                     </p>
                 </div>
         </div>

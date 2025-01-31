@@ -110,15 +110,15 @@ $users = $user->getAllUsers();
           
             <td class="px-6 py-4 whitespace-nowrap"><?php echo htmlspecialchars($user['full_name']); ?></td>
             <td class="px-6 py-4 whitespace-nowrap"><?php echo htmlspecialchars($user['email']); ?></td>
-            <?php if ($user['role'] == 'admin'): ?>
+            <?php if ($user['role'] == 'admin_principale'): ?>
               <td class="px-6 py-4 whitespace-nowrap">••••••••</td>
               <?php endif; ?>
-              <?php if ($user['role'] !== 'admin'): ?>
+              <?php if ($user['role'] !== 'admin_principale'): ?>
               <td class="px-6 py-4 whitespace-nowrap"><?php echo htmlspecialchars($user['password']); ?></td>
             <?php endif; ?>
             <td class="px-6 py-4 whitespace-nowrap"><?php echo htmlspecialchars($user['role']); ?></td>
             <td class="px-6 py-4 whitespace-nowrap">
-              <?php if ($user['role'] !== 'admin'): ?>
+              <?php if ($user['role'] !== 'admin_principale'): ?>
               <button onclick='openEditModal(<?php echo json_encode($user); ?>)' class="text-blue-600 hover:text-blue-800 mr-2">
                 <i class="fas fa-edit"></i>
               </button>
