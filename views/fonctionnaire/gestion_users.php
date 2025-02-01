@@ -101,7 +101,7 @@ $db = $database->connect();
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
     <title>Gestion du Personnel</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet"/>
     <style>
         body {
@@ -164,6 +164,50 @@ $db = $database->connect();
         input, select {
             border: 1px solid black !important;
         }
+        .table-container {
+            overflow-x: auto;
+        }
+        .compact-table {
+            table-layout: fixed;
+            width: 100%;
+        }
+        .compact-table th,
+        .compact-table td {
+            max-width: 150px;
+            overflow-wrap: break-word;
+            word-wrap: break-word;
+            white-space: normal;
+            padding: 8px;
+            vertical-align: top;
+        }
+        .compact-table th {
+            font-size: 0.65rem;  /* Slightly smaller font size */
+            padding: 4px 6px;    /* Slightly reduced padding */
+            text-transform: uppercase;
+            font-weight: 500;
+            color: #6b7280;
+            white-space: nowrap; /* Prevent text wrapping */
+            overflow: visible;   /* Allow text to be fully visible */
+        }
+        .photo-cell {
+            width: 75px;
+        }
+        .action-cell {
+            width: 80px;
+        }
+        .role-cell {
+            width: 130px;  
+        }
+        .famille-cell {
+            width: 140px;  /* Slightly wider to accommodate the header text */
+        }
+
+        .profile-photo {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 50%;
+        }
     </style>
 </head>
 <body class="bg-gray-100">
@@ -221,19 +265,19 @@ $db = $database->connect();
                 <table class="min-w-full divide-y divide-gray-200 compact-table">
                     <thead class="bg-gray-50">
                         <tr>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider photo-cell">Photo</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nom Complet</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rôle</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Situation Familiale</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ville</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Adresse</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date d'embauche</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date de démission</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date exp. CI</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date exp. Permis</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date exp. Visite</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Documents</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                            <th class="px-6 py-3 text-left text-xs font-normal text-gray-500 uppercase tracking-wider photo-cell">Photo</th>
+                            <th class="px-6 py-3 text-left text-xs font-normal text-gray-500 uppercase tracking-wider">Nom </th>
+                            <th class="px-6 py-3 text-left text-xs font-normal text-gray-500 uppercase tracking-wider role-cell">Rôle</th>
+                            <th class="px-6 py-3 text-left text-xs font-normal text-gray-500 uppercase tracking-wider famille-cell">S.Familiale</th>
+                            <th class="px-6 py-3 text-left text-xs font-normal text-gray-500 uppercase tracking-wider">Ville</th>
+                            <th class="px-6 py-3 text-left text-xs font-normal text-gray-500 uppercase tracking-wider">Adresse</th>
+                            <th class="px-6 py-3 text-left text-xs font-normal text-gray-500 uppercase tracking-wider">Embauche</th>
+                            <th class="px-6 py-3 text-left text-xs font-normal text-gray-500 uppercase tracking-wider">Démission</th>
+                            <th class="px-6 py-3 text-left text-xs font-normal text-gray-500 uppercase tracking-wider">CIN</th>
+                            <th class="px-6 py-3 text-left text-xs font-normal text-gray-500 uppercase tracking-wider">Permis</th>
+                            <th class="px-6 py-3 text-left text-xs font-normal text-gray-500 uppercase tracking-wider">Visite</th>
+                            <th class="px-6 py-3 text-left text-xs font-normal text-gray-500 uppercase tracking-wider">Documents</th>
+                            <th class="px-6 py-3 text-left text-xs font-normal text-gray-500 uppercase tracking-wider action-cell">Actions</th>
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
@@ -251,8 +295,8 @@ $db = $database->connect();
                                         <?php endif; ?>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap"><?php echo htmlspecialchars($person['nom_complet'] ?? ''); ?></td>
-                                    <td class="px-6 py-4 whitespace-nowrap"><?php echo htmlspecialchars($person['role'] ?? ''); ?></td>
-                                    <td class="px-6 py-4 whitespace-nowrap"><?php echo htmlspecialchars($person['situation_familiale'] ?? ''); ?></td>
+                                    <td class="px-6 py-4 whitespace-nowrap role-cell"><?php echo htmlspecialchars($person['role'] ?? ''); ?></td>
+                                    <td class="px-6 py-4 whitespace-nowrap famille-cell"><?php echo htmlspecialchars($person['situation_familiale'] ?? ''); ?></td>
                                     <td class="px-6 py-4 whitespace-nowrap"><?php echo htmlspecialchars($person['ville'] ?? ''); ?></td>
                                     <td class="px-6 py-4 whitespace-nowrap"><?php echo htmlspecialchars($person['adresse'] ?? ''); ?></td>
                                     <td class="px-6 py-4 whitespace-nowrap"><?php echo htmlspecialchars($person['date_embauche'] ?? ''); ?></td>
@@ -283,7 +327,7 @@ $db = $database->connect();
                                         <?php endif; ?>
 
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
+                                    <td class="px-6 py-4 whitespace-nowrap action-cell">
 
                                         <a href="#" class="text-green-600 hover:text-green-900 mr-2" onclick="openEditModal(<?php echo htmlspecialchars($person['id']); ?>)" title="Modifier">
                                             <i class="fas fa-edit"></i>
@@ -636,13 +680,6 @@ $db = $database->connect();
             e.preventDefault();
             
             const formData = new FormData(this);
-            formData.append('action', 'edit'); // Ajouter l'action 'edit'
-            
-            // Debug des données envoyées
-            console.log('Données envoyées :');
-            for (let pair of formData.entries()) {
-                console.log(pair[0] + ': ' + pair[1]);
-            }
             
             $.ajax({
                 url: '../../controllers/personnel/update.php',
