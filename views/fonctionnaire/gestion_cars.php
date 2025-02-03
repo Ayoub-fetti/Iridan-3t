@@ -91,6 +91,57 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 // Récupérer la liste des voitures
 $cars = $fonctionnaire->getAllCars();
+
+// Vérifier les documents qui expirent aujourd'hui
+$today = date('Y-m-d');
+$expiring_today = [];
+
+if ($cars['success']) {
+    foreach ($cars['data'] as $car) {
+        if ($car['date_expiration_carte_grise'] === $today) {
+            $expiring_today[] = [
+                'matricule' => $car['matricule'],
+                'document' => 'Carte grise'
+            ];
+        }
+        if ($car['date_expiration_visite'] === $today) {
+            $expiring_today[] = [
+                'matricule' => $car['matricule'],
+                'document' => 'Visite technique'
+            ];
+        }
+        if ($car['date_expiration_assurance'] === $today) {
+            $expiring_today[] = [
+                'matricule' => $car['matricule'],
+                'document' => 'Assurance'
+            ];
+        }
+        if ($car['date_expiration_vignette'] === $today) {
+            $expiring_today[] = [
+                'matricule' => $car['matricule'],
+                'document' => 'Vignette'
+            ];
+        }
+        if ($car['date_expiration_circulation'] === $today) {
+            $expiring_today[] = [
+                'matricule' => $car['matricule'],
+                'document' => 'Autorisation de circulation'
+            ];
+        }
+        if ($car['date_expiration_extincteur'] === $today) {
+            $expiring_today[] = [
+                'matricule' => $car['matricule'],
+                'document' => 'Extincteur'
+            ];
+        }
+        if ($car['date_expiration_tachygraphe'] === $today) {
+            $expiring_today[] = [
+                'matricule' => $car['matricule'],
+                'document' => 'Tachygraphe'
+            ];
+        }
+    }
+}
 ?>
 
 <!DOCTYPE html>
@@ -185,6 +236,17 @@ $cars = $fonctionnaire->getAllCars();
             <?php if ($message): ?>
                 <div class="mb-4 p-4 rounded-md <?php echo $success ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'; ?>">
                     <?php echo $message; ?>
+                </div>
+            <?php endif; ?>
+
+            <?php if (!empty($expiring_today)): ?>
+                <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-4">
+                    <div class="font-bold">Documents expirant aujourd'hui :</div>
+                    <ul class="list-disc list-inside">
+                        <?php foreach ($expiring_today as $item): ?>
+                            <li>Le document <?php echo $item['document']; ?> du véhicule <?php echo $item['matricule']; ?> expire aujourd'hui</li>
+                        <?php endforeach; ?>
+                    </ul>
                 </div>
             <?php endif; ?>
 
