@@ -263,41 +263,64 @@ $db = $database->connect();
             <!-- Table du personnel -->
             <div class="table-container">
                 <?php
-                // Vérifier les documents qui expirent aujourd'hui
+                // Vérifier les documents qui expirent bientôt ou sont déjà expirés
                 $result = $fonctionnaire->getAllPersonnel();
                 if ($result['success']) {
-                    $today = date('Y-m-d');
-                    $expiring_today = [];
+                    $today = new DateTime();
+                    $expiring_soon = [];
+                    $expired = [];
                     
                     foreach ($result['data'] as $person) {
-                        if ($person['date_expiration_carte'] === $today) {
-                            $expiring_today[] = [
-                                'nom' => $person['nom_complet'],
-                                'document' => 'Carte d\'identité'
-                            ];
-                        }
-                        if ($person['date_expiration_permit'] === $today) {
-                            $expiring_today[] = [
-                                'nom' => $person['nom_complet'],
-                                'document' => 'Permis de conduire'
-                            ];
-                        }
-                        if ($person['date_expiration_visite'] === $today) {
-                            $expiring_today[] = [
-                                'nom' => $person['nom_complet'],
-                                'document' => 'Visite médicale'
-                            ];
+                        $documents = [
+                            'carte' => ['date' => $person['date_expiration_carte'], 'nom' => 'Carte d\'identité'],
+                            'permit' => ['date' => $person['date_expiration_permit'], 'nom' => 'Permis de conduire'],
+                            'visite' => ['date' => $person['date_expiration_visite'], 'nom' => 'Visite médicale']
+                        ];
+
+                        foreach ($documents as $type => $info) {
+                            if (!empty($info['date'])) {
+                                $expiration_date = new DateTime($info['date']);
+                                $interval = $today->diff($expiration_date);
+                                $days_remaining = $expiration_date >= $today ? $interval->days : -$interval->days;
+
+                                if ($days_remaining <= 5 && $days_remaining >= 0) {
+                                    $expiring_soon[] = [
+                                        'nom' => $person['nom_complet'],
+                                        'document' => $info['nom'],
+                                        'jours' => $days_remaining
+                                    ];
+                                } elseif ($days_remaining < 0) {
+                                    $expired[] = [
+                                        'nom' => $person['nom_complet'],
+                                        'document' => $info['nom'],
+                                        'jours' => abs($days_remaining)
+                                    ];
+                                }
+                            }
                         }
                     }
                     
-                    if (!empty($expiring_today)) {
+                    if (!empty($expired) || !empty($expiring_soon)) {
                         echo '<div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-4">';
-                        echo '<div class="font-bold">Documents expirant aujourd\'hui :</div>';
-                        echo '<ul class="list-disc list-inside">';
-                        foreach ($expiring_today as $item) {
-                            echo '<li>' . htmlspecialchars($item['nom']) . ' - ' . htmlspecialchars($item['document']) . '</li>';
+                        
+                        if (!empty($expired)) {
+                            echo '<div class="font-bold mb-2">Documents expirés :</div>';
+                            echo '<ul class="list-disc list-inside mb-3">';
+                            foreach ($expired as $item) {
+                                echo '<li>Le ' . htmlspecialchars($item['document']) . ' de ' . htmlspecialchars($item['nom']) . ' est expiré depuis ' . htmlspecialchars($item['jours']) . ' jour' . ($item['jours'] > 1 ? 's' : '') . '</li>';
+                            }
+                            echo '</ul>';
                         }
-                        echo '</ul>';
+                        
+                        if (!empty($expiring_soon)) {
+                            echo '<div class="font-bold mb-2">Documents qui expirent bientôt :</div>';
+                            echo '<ul class="list-disc list-inside">';
+                            foreach ($expiring_soon as $item) {
+                                echo '<li>Le ' . htmlspecialchars($item['document']) . ' de ' . htmlspecialchars($item['nom']) . ' expire dans ' . htmlspecialchars($item['jours']) . ' jour' . ($item['jours'] > 1 ? 's' : '') . '</li>';
+                            }
+                            echo '</ul>';
+                        }
+                        
                         echo '</div>';
                     }
                 }
