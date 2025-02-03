@@ -262,6 +262,46 @@ $db = $database->connect();
 
             <!-- Table du personnel -->
             <div class="table-container">
+                <?php
+                // Vérifier les documents qui expirent aujourd'hui
+                $result = $fonctionnaire->getAllPersonnel();
+                if ($result['success']) {
+                    $today = date('Y-m-d');
+                    $expiring_today = [];
+                    
+                    foreach ($result['data'] as $person) {
+                        if ($person['date_expiration_carte'] === $today) {
+                            $expiring_today[] = [
+                                'nom' => $person['nom_complet'],
+                                'document' => 'Carte d\'identité'
+                            ];
+                        }
+                        if ($person['date_expiration_permit'] === $today) {
+                            $expiring_today[] = [
+                                'nom' => $person['nom_complet'],
+                                'document' => 'Permis de conduire'
+                            ];
+                        }
+                        if ($person['date_expiration_visite'] === $today) {
+                            $expiring_today[] = [
+                                'nom' => $person['nom_complet'],
+                                'document' => 'Visite médicale'
+                            ];
+                        }
+                    }
+                    
+                    if (!empty($expiring_today)) {
+                        echo '<div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-4">';
+                        echo '<div class="font-bold">Documents expirant aujourd\'hui :</div>';
+                        echo '<ul class="list-disc list-inside">';
+                        foreach ($expiring_today as $item) {
+                            echo '<li>' . htmlspecialchars($item['nom']) . ' - ' . htmlspecialchars($item['document']) . '</li>';
+                        }
+                        echo '</ul>';
+                        echo '</div>';
+                    }
+                }
+                ?>
                 <table class="min-w-full divide-y divide-gray-200 compact-table">
                     <thead class="bg-gray-50">
                         <tr>
