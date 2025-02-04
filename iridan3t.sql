@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Jan 28, 2025 at 11:12 AM
+-- Generation Time: Feb 03, 2025 at 08:19 PM
 -- Server version: 8.0.30
 -- PHP Version: 8.1.10
 
@@ -65,13 +65,6 @@ CREATE TABLE `cars` (
   `status` enum('en panne','en service','en maintenance') NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
---
--- Dumping data for table `cars`
---
-
-INSERT INTO `cars` (`matricule`, `marque`, `ville`, `chauffeurs_id`, `carte_grise`, `date_expiration_carte_grise`, `visite_technique`, `date_expiration_visite`, `assurance`, `date_expiration_assurance`, `vignette`, `date_expiration_vignette`, `feuille_circulation`, `date_expiration_circulation`, `feuille_extincteur`, `date_expiration_extincteur`, `feuille_tachygraphe`, `date_expiration_tachygraphe`, `status`) VALUES
-('test', 'test', 'test', NULL, 'test', '2025-01-15', 'test', '2025-01-14', 'test', '2025-01-15', 'test', '2025-01-21', 'test', '2025-01-23', 'test', '2025-01-16', 'test', '2025-01-16', 'en panne');
-
 -- --------------------------------------------------------
 
 --
@@ -97,13 +90,6 @@ CREATE TABLE `personnel` (
   `photo` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
---
--- Dumping data for table `personnel`
---
-
-INSERT INTO `personnel` (`id`, `nom_complet`, `carte_identite`, `date_expiration_carte`, `role`, `situation_familiale`, `ville`, `adresse`, `contrat`, `date_embauche`, `date_demission`, `permit_conduire`, `date_expiration_permit`, `visite_medicale`, `date_expiration_visite`, `photo`) VALUES
-(2, 'ayoub', 'uploads/cartes_identite/6798baf97da0a_CV-ayoub_fetti.pdf', '2030-02-01', 'chauffeurs', 'celibataire', 'meknes', 'nr 52 ', 'cdd', '2025-12-12', NULL, 'uploads/permis/6798baf97dc4f_CV-ayoub_fetti.pdf', '2025-12-12', 'uploads/visites_medicales/6798baf97dd4b_CV-ayoub_fetti.pdf', '2025-12-12', 'uploads/photos/6798baf97de22_DSC_6805.jpg');
-
 -- --------------------------------------------------------
 
 --
@@ -115,7 +101,7 @@ CREATE TABLE `utilisateur` (
   `full_name` varchar(255) NOT NULL,
   `email` varchar(255) NOT NULL,
   `password` varchar(255) NOT NULL,
-  `role` enum('admin','fonctionnaire') NOT NULL
+  `role` enum('admin','fonctionnaire','admin_principale') CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
@@ -123,9 +109,9 @@ CREATE TABLE `utilisateur` (
 --
 
 INSERT INTO `utilisateur` (`id`, `full_name`, `email`, `password`, `role`) VALUES
-(2, 'admin', 'admin@admin.com', '123', 'admin'),
-(3, 'ayoub', 'ayoub@gmail.com', '123123', 'fonctionnaire'),
-(26, 'mehdi 1', 'mehdi@gmail.com', '123456', 'fonctionnaire');
+(2, 'admin', 'admin@admin.com', '123', 'admin_principale'),
+(27, 'ayoub', 'ayoub@gmail.com', '123', 'fonctionnaire'),
+(28, 'fetti', 'fetti@gmail.com', '123', 'admin');
 
 --
 -- Indexes for dumped tables
@@ -166,19 +152,19 @@ ALTER TABLE `utilisateur`
 -- AUTO_INCREMENT for table `accidents`
 --
 ALTER TABLE `accidents`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `personnel`
 --
 ALTER TABLE `personnel`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `utilisateur`
 --
 ALTER TABLE `utilisateur`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=29;
 
 --
 -- Constraints for dumped tables
