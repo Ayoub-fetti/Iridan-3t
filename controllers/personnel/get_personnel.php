@@ -1,35 +1,28 @@
 <?php
+header('Content-Type: application/json');
+
 require_once __DIR__ . '/../../config/Database.php';
 require_once __DIR__ . '/../../models/fonctionnaire.php';
 
-header('Content-Type: application/json');
+$response = ['success' => false, 'message' => 'Requête invalide'];
 
-// Activer l'affichage des erreurs pour le débogage
-ini_set('display_errors', 1);
-error_reporting(E_ALL);
-
-if (!isset($_GET['id'])) {
-    echo json_encode(['success' => false, 'message' => 'ID non fourni']);
-    exit;
-}
-
-try {
-    $database = new Database();
-    $db = $database->connect();
-    $fonctionnaire = new Fonctionnaire();
-
+if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['id'])) {
     $id = intval($_GET['id']);
+    
+    $fonctionnaire = new Fonctionnaire();
     $result = $fonctionnaire->getPersonnelById($id);
-
-    if (!$result['success']) {
-        http_response_code(404);
+    
+    if ($result['success']) {
+        $response = [
+            'success' => true,
+            'data' => $result['data']
+        ];
+    } else {
+        $response = [
+            'success' => false,
+            'message' => $result['message'] ?? 'Impossible de récupérer les informations du personnel'
+        ];
     }
-
-    echo json_encode($result);
-} catch (Exception $e) {
-    http_response_code(500);
-    echo json_encode([
-        'success' => false,
-        'message' => 'Erreur serveur: ' . $e->getMessage()
-    ]);
 }
+
+echo json_encode($response);

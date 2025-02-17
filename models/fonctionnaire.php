@@ -202,6 +202,37 @@ class Fonctionnaire {
         }
     }
 
+    // Pour récupérer un personnel par son ID
+    public function getPersonnelById($id) {
+        try {
+            $query = "SELECT * FROM personnel WHERE id = :id";
+
+            $stmt = $this->conn->prepare($query);
+            $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+            $stmt->execute();
+
+            $personnel = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            if ($personnel) {
+                return [
+                    'success' => true,
+                    'data' => $personnel
+                ];
+            }
+
+            return [
+                'success' => false,
+                'message' => 'Personnel non trouvé'
+            ];
+
+        } catch(PDOException $e) {
+            return [
+                'success' => false,
+                'message' => 'Erreur: ' . $e->getMessage()
+            ];
+        }
+    }
+
     // Pour ajouter une voiture
     public function createCar($data, $files) {
         try {

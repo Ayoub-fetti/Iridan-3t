@@ -92,46 +92,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 // Récupérer la liste des voitures
 $cars = $fonctionnaire->getAllCars();
 
-// Vérifier les documents qui expirent dans les 5 prochains jours ou sont déjà expirés
-$today = new DateTime();
-$expiring_soon = [];
-$expired = [];
-
-if ($cars['success']) {
-    foreach ($cars['data'] as $car) {
-        $documents = [
-            'carte_grise' => ['date' => $car['date_expiration_carte_grise'], 'nom' => 'Carte grise'],
-            'visite' => ['date' => $car['date_expiration_visite'], 'nom' => 'Visite technique'],
-            'assurance' => ['date' => $car['date_expiration_assurance'], 'nom' => 'Assurance'],
-            'vignette' => ['date' => $car['date_expiration_vignette'], 'nom' => 'Vignette'],
-            'circulation' => ['date' => $car['date_expiration_circulation'], 'nom' => 'Autorisation de circulation'],
-            'extincteur' => ['date' => $car['date_expiration_extincteur'], 'nom' => 'Extincteur'],
-            'tachygraphe' => ['date' => $car['date_expiration_tachygraphe'], 'nom' => 'Tachygraphe']
-        ];
-
-        foreach ($documents as $type => $info) {
-            if (!empty($info['date'])) {
-                $expiration_date = new DateTime($info['date']);
-                $interval = $today->diff($expiration_date);
-                $days_remaining = $expiration_date >= $today ? $interval->days : -$interval->days;
-
-                if ($days_remaining <= 5 && $days_remaining >= 0) {
-                    $expiring_soon[] = [
-                        'matricule' => $car['matricule'],
-                        'document' => $info['nom'],
-                        'jours' => $days_remaining
-                    ];
-                } elseif ($days_remaining < 0) {
-                    $expired[] = [
-                        'matricule' => $car['matricule'],
-                        'document' => $info['nom'],
-                        'jours' => abs($days_remaining)
-                    ];
-                }
-            }
-        }
-    }
-}
 ?>
 
 <!DOCTYPE html>
@@ -229,28 +189,6 @@ if ($cars['success']) {
                 </div>
             <?php endif; ?>
 
-            <?php if (!empty($expired) || !empty($expiring_soon)): ?>
-                <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-4">
-                    <?php if (!empty($expired)): ?>
-                        <div class="font-bold mb-2">Documents expirés :</div>
-                        <ul class="list-disc list-inside mb-3">
-                            <?php foreach ($expired as $item): ?>
-                                <li>Le document <?php echo htmlspecialchars($item['document']); ?> du véhicule <?php echo htmlspecialchars($item['matricule']); ?> est expiré depuis <?php echo htmlspecialchars($item['jours']); ?> jour<?php echo $item['jours'] > 1 ? 's' : ''; ?></li>
-                            <?php endforeach; ?>
-                        </ul>
-                    <?php endif; ?>
-                    
-                    <?php if (!empty($expiring_soon)): ?>
-                        <div class="font-bold mb-2">Documents qui expirent bientôt :</div>
-                        <ul class="list-disc list-inside">
-                            <?php foreach ($expiring_soon as $item): ?>
-                                <li>Le document <?php echo htmlspecialchars($item['document']); ?> du véhicule <?php echo htmlspecialchars($item['matricule']); ?> expire dans <?php echo htmlspecialchars($item['jours']); ?> jour<?php echo $item['jours'] > 1 ? 's' : ''; ?></li>
-                            <?php endforeach; ?>
-                        </ul>
-                    <?php endif; ?>
-                </div>
-            <?php endif; ?>
-
             <!-- Table des véhicules -->
             <div class="bg-white rounded-lg shadow-md overflow-hidden">
                 <div class="overflow-x-auto">
@@ -276,7 +214,15 @@ if ($cars['success']) {
                                         default => 'bg-gray-100 text-gray-800'
                                     };
                                     ?>
-                                    <tr>
+                                    <tr 
+                                        data-carte-grise-expiration="<?php echo htmlspecialchars($car['date_expiration_carte_grise'] ?? ''); ?>"
+                                        data-visite-expiration="<?php echo htmlspecialchars($car['date_expiration_visite'] ?? ''); ?>"
+                                        data-assurance-expiration="<?php echo htmlspecialchars($car['date_expiration_assurance'] ?? ''); ?>"
+                                        data-vignette-expiration="<?php echo htmlspecialchars($car['date_expiration_vignette'] ?? ''); ?>"
+                                        data-circulation-expiration="<?php echo htmlspecialchars($car['date_expiration_circulation'] ?? ''); ?>"
+                                        data-extincteur-expiration="<?php echo htmlspecialchars($car['date_expiration_extincteur'] ?? ''); ?>"
+                                        data-tachygraphe-expiration="<?php echo htmlspecialchars($car['date_expiration_tachygraphe'] ?? ''); ?>"
+                                    >
                                         <td class="px-6 py-4 whitespace-nowrap"><?php echo htmlspecialchars($car['matricule']); ?></td>
                                         <td class="px-6 py-4 whitespace-nowrap"><?php echo htmlspecialchars($car['marque']); ?></td>
                                         <td class="px-6 py-4 whitespace-nowrap"><?php echo htmlspecialchars($car['ville']); ?></td>
@@ -758,6 +704,41 @@ if ($cars['success']) {
                 });
             };
         <?php endif; ?>
+
+        // Fonction pour mettre en évidence les lignes avec des documents expirés
+        function highlightExpiredRows() {
+            const rows = document.querySelectorAll('tbody tr');
+            const today = new Date();
+
+            rows.forEach(row => {
+                const expirationDates = [
+                    row.getAttribute('data-carte-grise-expiration'),
+                    row.getAttribute('data-visite-expiration'),
+                    row.getAttribute('data-assurance-expiration'),
+                    row.getAttribute('data-vignette-expiration'),
+                    row.getAttribute('data-circulation-expiration'),
+                    row.getAttribute('data-extincteur-expiration'),
+                    row.getAttribute('data-tachygraphe-expiration')
+                ];
+
+                const hasExpired = expirationDates.some(date => {
+                    if (date) {
+                        const expirationDate = new Date(date);
+                        return expirationDate < today;
+                    }
+                    return false;
+                });
+
+                if (hasExpired) {
+                    row.classList.add('bg-red-100');
+                } else {
+                    row.classList.remove('bg-red-100');
+                }
+            });
+        }
+
+        // Appeler la fonction pour mettre en évidence les lignes avec des documents expirés
+        highlightExpiredRows();
     </script>
 </body>
 </html>

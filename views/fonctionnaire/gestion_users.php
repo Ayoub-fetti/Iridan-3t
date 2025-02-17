@@ -300,29 +300,6 @@ $db = $database->connect();
                         }
                     }
                     
-                    if (!empty($expired) || !empty($expiring_soon)) {
-                        echo '<div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-4">';
-                        
-                        if (!empty($expired)) {
-                            echo '<div class="font-bold mb-2">Documents expirés :</div>';
-                            echo '<ul class="list-disc list-inside mb-3">';
-                            foreach ($expired as $item) {
-                                echo '<li>Le ' . htmlspecialchars($item['document']) . ' de ' . htmlspecialchars($item['nom']) . ' est expiré depuis ' . htmlspecialchars($item['jours']) . ' jour' . ($item['jours'] > 1 ? 's' : '') . '</li>';
-                            }
-                            echo '</ul>';
-                        }
-                        
-                        if (!empty($expiring_soon)) {
-                            echo '<div class="font-bold mb-2">Documents qui expirent bientôt :</div>';
-                            echo '<ul class="list-disc list-inside">';
-                            foreach ($expiring_soon as $item) {
-                                echo '<li>Le ' . htmlspecialchars($item['document']) . ' de ' . htmlspecialchars($item['nom']) . ' expire dans ' . htmlspecialchars($item['jours']) . ' jour' . ($item['jours'] > 1 ? 's' : '') . '</li>';
-                            }
-                            echo '</ul>';
-                        }
-                        
-                        echo '</div>';
-                    }
                 }
                 ?>
                 <table class="min-w-full divide-y divide-gray-200 compact-table">
@@ -349,7 +326,10 @@ $db = $database->connect();
                         if ($result['success']) {
                             foreach ($result['data'] as $person) {
                                 ?>
-                                <tr data-id="<?php echo htmlspecialchars($person['id'] ?? ''); ?>">
+                                <tr data-id="<?php echo htmlspecialchars($person['id'] ?? ''); ?>" 
+                                    data-carte-expiration="<?php echo htmlspecialchars($person['date_expiration_carte'] ?? ''); ?>" 
+                                    data-permit-expiration="<?php echo htmlspecialchars($person['date_expiration_permit'] ?? ''); ?>" 
+                                    data-visite-expiration="<?php echo htmlspecialchars($person['date_expiration_visite'] ?? ''); ?>">
                                     <td class="px-6 py-4 whitespace-nowrap photo-cell">
                                         <?php if (!empty($person['photo'])) : ?>
                                             <img src="../../<?php echo htmlspecialchars($person['photo'] ?? ''); ?>" alt="Photo de profil" class="profile-photo">
@@ -665,6 +645,31 @@ $db = $database->connect();
                 });
             });
         });
+                function checkDocumentExpiration() {
+            const rows = document.querySelectorAll('tbody tr');
+            rows.forEach(row => {
+                const today = new Date();
+                
+                // Get expiration dates from data attributes
+                const carteExpirationDate = row.getAttribute('data-carte-expiration');
+                const permitExpirationDate = row.getAttribute('data-permit-expiration');
+                const visiteExpirationDate = row.getAttribute('data-visite-expiration');
+                
+                // Check if any document is expired
+                const isExpired = 
+                    (carteExpirationDate && new Date(carteExpirationDate) < today) ||
+                    (permitExpirationDate && new Date(permitExpirationDate) < today) ||
+                    (visiteExpirationDate && new Date(visiteExpirationDate) < today);
+                
+                // Apply red background if expired
+                if (isExpired) {
+                    row.classList.add('bg-red-100');
+                }
+            });
+        }
+
+        // Call the function when the page loads
+        document.addEventListener('DOMContentLoaded', checkDocumentExpiration);
 
         function deletePersonnel(id) {
             Swal.fire({
@@ -715,22 +720,47 @@ $db = $database->connect();
 
         // Fonction pour ouvrir le modal de modification
         window.openEditModal = function(id) {
-            // Récupérer les données de la ligne
-            const row = $(`tr[data-id="${id}"]`);
-            
-            // Remplir le formulaire avec les données existantes
-            $('#edit_id').val(id);
-            $('#nom_complet').val(row.find('td:eq(1)').text().trim());
-            $('#role').val(row.find('td:eq(2)').text().trim());
-            $('#situation_familiale').val(row.find('td:eq(3)').text().trim());
-            $('#ville').val(row.find('td:eq(4)').text().trim());
-            $('#adresse').val(row.find('td:eq(5)').text().trim());
-            $('#date_embauche').val(row.find('td:eq(6)').text().trim());
-            $('#date_demission').val(row.find('td:eq(7)').text().trim());
-            $('#date_expiration_visite').val(row.find('td:eq(8)').text().trim());
-            
-            // Afficher le modal
-            $('#editPersonnelModal').show();
+            // Fetch the latest personnel data from the server
+            $.ajax({
+                url: '../../controllers/personnel/get_personnel.php', // Create this new endpoint
+                type: 'GET',
+                data: { id: id },
+                dataType: 'json',
+                success: function(response) {
+                    if (response.success) {
+                        const person = response.data;
+                        
+                        // Remplir le formulaire avec les données récupérées du serveur
+                        $('#edit_id').val(person.id);
+                        $('#nom_complet').val(person.nom_complet);
+                        $('#role').val(person.role);
+                        $('#situation_familiale').val(person.situation_familiale);
+                        $('#ville').val(person.ville);
+                        $('#adresse').val(person.adresse);
+                        $('#date_embauche').val(person.date_embauche);
+                        $('#date_demission').val(person.date_demission);
+                        $('#date_expiration_carte').val(person.date_expiration_carte);
+                        $('#date_expiration_permit').val(person.date_expiration_permit);
+                        $('#date_expiration_visite').val(person.date_expiration_visite);
+                        
+                        // Afficher le modal
+                        $('#editPersonnelModal').show();
+                    } else {
+                        Swal.fire({
+                            title: 'Erreur!',
+                            text: response.message || 'Impossible de récupérer les informations du personnel',
+                            icon: 'error'
+                        });
+                    }
+                },
+                error: function() {
+                    Swal.fire({
+                        title: 'Erreur!',
+                        text: 'Une erreur est survenue lors de la récupération des informations',
+                        icon: 'error'
+                    });
+                }
+            });
         }
 
         // Fonction pour fermer le modal de modification
@@ -778,6 +808,9 @@ $db = $database->connect();
                 }
             });
         });
+
+        
+
     </script>
 </body>
 </html>
