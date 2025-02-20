@@ -567,14 +567,19 @@ class Fonctionnaire {
                 date_declaration_assurance,
                 `procédure`,
                 status_resolution,
-                commentaire
+                commentaire,
+                date_accident,
+                date_reparation
+
             ) VALUES (
                 :cars_id,
                 :chauffeurs_id,
                 :date_declaration_assurance,
                 :procedure,
                 :status_resolution,
-                :commentaire
+                :commentaire,
+                :date_accident,
+                :date_reparation
             )";
 
             $stmt = $this->conn->prepare($query);
@@ -586,6 +591,8 @@ class Fonctionnaire {
             $stmt->bindParam(':procedure', $data['procedure']);
             $stmt->bindParam(':status_resolution', $data['status_resolution']);
             $stmt->bindParam(':commentaire', $data['commentaire']);
+            $stmt->bindParam(':date_accident', $data['date_accident']);
+            $stmt->bindParam(':date_reparation', $data['date_reparation']);
 
             if($stmt->execute()) {
                 return [
@@ -669,7 +676,9 @@ class Fonctionnaire {
                 date_declaration_assurance = :date_declaration_assurance,
                 `procédure` = :procedure,
                 status_resolution = :status_resolution,
-                commentaire = :commentaire
+                commentaire = :commentaire,
+                date_accident  = :date_accident,
+                date_reparation = :date_reparation
                 WHERE id = :id";
 
             $stmt = $this->conn->prepare($query);
@@ -682,6 +691,8 @@ class Fonctionnaire {
             $stmt->bindParam(':procedure', $data['procedure']);
             $stmt->bindParam(':status_resolution', $data['status_resolution']);
             $stmt->bindParam(':commentaire', $data['commentaire']);
+            $stmt->bindParam(':date_accident', $data['date_accident']);
+            $stmt->bindParam(':date_reparation', $data['date_reparation']);
 
             if($stmt->execute()) {
                 return [

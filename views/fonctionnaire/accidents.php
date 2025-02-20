@@ -29,8 +29,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     'date_declaration_assurance' => $_POST['date_declaration_assurance'],
                     'procedure' => $_POST['procedure'],
                     'status_resolution' => $_POST['status_resolution'],
-                    'commentaire' => $_POST['commentaire']
-                ];
+                    'commentaire' => $_POST['commentaire'],
+                    'date_accident' => $_POST['date_accident'],
+                    'date_reparation' => $_POST['date_reparation']
+                ];  
                 
                 $result = $fonctionnaire->createAccident($data);
                 if ($result['success']) {
@@ -50,7 +52,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     'date_declaration_assurance' => $_POST['date_declaration_assurance'],
                     'procedure' => $_POST['procedure'],
                     'status_resolution' => $_POST['status_resolution'],
-                    'commentaire' => $_POST['commentaire']
+                    'commentaire' => $_POST['commentaire'],
+                    'date_accident' => $_POST['date_accident'],
+                    'date_reparation' => $_POST['date_reparation']
                 ];
                 
                 $result = $fonctionnaire->updateAccident($_POST['accident_id'], $data);
@@ -217,6 +221,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Procédure</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Commentaire</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date Accident</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date Reparation</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                             </tr>
                         </thead>
@@ -228,7 +234,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     <td class="px-6 py-4 whitespace-nowrap"><?php echo htmlspecialchars($accident['date_declaration_assurance']); ?></td>
                                     <td class="px-6 py-4 whitespace-nowrap"><?php echo htmlspecialchars($accident['procédure']); ?></td>
                                     <td class="px-6 py-4 whitespace-nowrap"><?php echo htmlspecialchars($accident['status_resolution']); ?></td>
-                                    <td class="px-6 py-4 whitespace-nowrap"><?php echo htmlspecialchars($accident['commentaire']); ?></td>
+                                    <td class="px-6 py-4 whitespace-nowrap"><?php echo htmlspecialchars($accident['commentaire']); ?></td>  
+                                    <td class="px-6 py-4 whitespace-nowrap"><?php echo htmlspecialchars($accident['date_accident']); ?></td>
+                                    <td class="px-6 py-4 whitespace-nowrap"><?php echo htmlspecialchars($accident['date_reparation']); ?></td>
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <button onclick="openEditModal(<?php echo htmlspecialchars(json_encode($accident)); ?>)" class="text-blue-600 hover:text-blue-900 mr-2" title="Modifier">
                                             <i class="fas fa-edit"></i>
@@ -305,6 +313,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <label for="commentaire">Commentaire</label>
                         <textarea name="commentaire" id="commentaire" rows="2"></textarea>
                     </div>
+
+                    <div class="input-group">
+                        <label for="date_accident">Date Accident</label>
+                        <input type="date" name="date_accident" id="date_accident" required>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="date_reparation">Date Reparation</label>
+                        <input type="date" name="date_reparation" id="date_reparation" required>
+                    </div>
                 </div>
 
                 <div class="button-group">
@@ -379,6 +397,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <label for="edit_commentaire">Commentaire</label>
                         <textarea name="commentaire" id="edit_commentaire" rows="2"></textarea>
                     </div>
+
+                    <div class="input-group">
+                        <label for="edit_date_accident">Date Accident</label>
+                        <input type="date" name="date_accident" id="edit_date_accident" required>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="edit_date_reparation">Date Reparation</label>
+                        <input type="date" name="date_reparation" id="edit_date_reparation" required>
+                    </div>
                 </div>
 
                 <div class="button-group">
@@ -427,6 +455,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             document.getElementById('edit_procedure').value = accident.procedure;
             document.getElementById('edit_status_resolution').value = accident.status_resolution;
             document.getElementById('edit_commentaire').value = accident.commentaire || '';
+            document.getElementById('edit_date_accident').value = accident.date_accident;
+            document.getElementById('edit_date_reparation').value = accident.date_reparation;
             
             openModal('editAccidentModal');
         }
