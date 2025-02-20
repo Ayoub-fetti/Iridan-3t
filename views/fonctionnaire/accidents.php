@@ -31,7 +31,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     'status_resolution' => $_POST['status_resolution'],
                     'commentaire' => $_POST['commentaire'],
                     'date_accident' => $_POST['date_accident'],
-                    'date_reparation' => $_POST['date_reparation']
+                    'date_reparation' => $_POST['date_reparation'],
+                    'suivie' => $_POST['suivie'] ?? null,
                 ];  
                 
                 $result = $fonctionnaire->createAccident($data);
@@ -50,11 +51,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     'cars_id' => $_POST['cars_id'],
                     'chauffeurs_id' => $_POST['chauffeurs_id'],
                     'date_declaration_assurance' => $_POST['date_declaration_assurance'],
+                    // 'procédure' => $_POST['procédure'],
                     'procedure' => $_POST['procedure'],
                     'status_resolution' => $_POST['status_resolution'],
                     'commentaire' => $_POST['commentaire'],
                     'date_accident' => $_POST['date_accident'],
-                    'date_reparation' => $_POST['date_reparation']
+                    'date_reparation' => $_POST['date_reparation'],
+                    'suivie' => $_POST['suivie'],
                 ];
                 
                 $result = $fonctionnaire->updateAccident($_POST['accident_id'], $data);
@@ -221,6 +224,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Procédure</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Commentaire</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Suivie</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date Accident</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date Reparation</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
@@ -234,7 +238,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     <td class="px-6 py-4 whitespace-nowrap"><?php echo htmlspecialchars($accident['date_declaration_assurance']); ?></td>
                                     <td class="px-6 py-4 whitespace-nowrap"><?php echo htmlspecialchars($accident['procédure']); ?></td>
                                     <td class="px-6 py-4 whitespace-nowrap"><?php echo htmlspecialchars($accident['status_resolution']); ?></td>
-                                    <td class="px-6 py-4 whitespace-nowrap"><?php echo htmlspecialchars($accident['commentaire']); ?></td>  
+                                    <td class="px-6 py-4 whitespace-nowrap"><?php echo htmlspecialchars($accident['commentaire']); ?></td> 
+                                    <td class="px-6 py-4 whitespace-nowrap"><?php echo htmlspecialchars($accident['suivie']); ?></td> 
                                     <td class="px-6 py-4 whitespace-nowrap"><?php echo htmlspecialchars($accident['date_accident']); ?></td>
                                     <td class="px-6 py-4 whitespace-nowrap"><?php echo htmlspecialchars($accident['date_reparation']); ?></td>
                                     <td class="px-6 py-4 whitespace-nowrap">
@@ -315,6 +320,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </div>
 
                     <div class="input-group">
+                        <label for="suivie">Suivi</label>
+                        <select name="suivie" id="suivie" required>
+                            <option value="en cours">En cours</option>
+                            <option value="cloture">Cloturé</option>
+                            <option value="arrengement">Arrangement</option>
+                        </select>
+                    </div>
+
+                    <div class="input-group">
                         <label for="date_accident">Date Accident</label>
                         <input type="date" name="date_accident" id="date_accident" required>
                     </div>
@@ -380,9 +394,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <select name="procedure" id="edit_procedure" required>
                             <option value="normal">Normal</option>
                             <option value="forfait">Forfait</option>
-                            <option value="garage a greyer">Garage à greyer</option>
+                            <option value="garage agrée">Garage agrée</option>
                         </select>
                     </div>
+
 
                     <div class="input-group">
                         <label for="edit_status_resolution">Statut</label>
@@ -396,6 +411,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <div class="input-group grid-1">
                         <label for="edit_commentaire">Commentaire</label>
                         <textarea name="commentaire" id="edit_commentaire" rows="2"></textarea>
+                    </div>
+                    <div class="input-group">
+                        <label for="suivie">Suivi</label>
+                        <select name="suivie" id="suivie" required>
+                            <option value="en cours">En cours</option>
+                            <option value="cloture">Cloturé</option>
+                            <option value="arrengement">Arrangement</option>
+                        </select>
                     </div>
 
                     <div class="input-group">
@@ -452,9 +475,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             document.getElementById('edit_cars_id').value = accident.cars_id;
             document.getElementById('edit_chauffeurs_id').value = accident.chauffeurs_id;
             document.getElementById('edit_date_declaration_assurance').value = accident.date_declaration_assurance;
+            // document.getElementById('edit_procedure').value = accident.procedure;
             document.getElementById('edit_procedure').value = accident.procedure;
             document.getElementById('edit_status_resolution').value = accident.status_resolution;
             document.getElementById('edit_commentaire').value = accident.commentaire || '';
+            document.getElementById('suivie').value = accident.suivie;
             document.getElementById('edit_date_accident').value = accident.date_accident;
             document.getElementById('edit_date_reparation').value = accident.date_reparation;
             

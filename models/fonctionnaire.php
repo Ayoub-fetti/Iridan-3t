@@ -569,7 +569,8 @@ class Fonctionnaire {
                 status_resolution,
                 commentaire,
                 date_accident,
-                date_reparation
+                date_reparation,
+                suivie
 
             ) VALUES (
                 :cars_id,
@@ -579,7 +580,8 @@ class Fonctionnaire {
                 :status_resolution,
                 :commentaire,
                 :date_accident,
-                :date_reparation
+                :date_reparation,
+                :suivie
             )";
 
             $stmt = $this->conn->prepare($query);
@@ -593,6 +595,7 @@ class Fonctionnaire {
             $stmt->bindParam(':commentaire', $data['commentaire']);
             $stmt->bindParam(':date_accident', $data['date_accident']);
             $stmt->bindParam(':date_reparation', $data['date_reparation']);
+            $stmt->bindParam(':suivie', $data['suivie']);
 
             if($stmt->execute()) {
                 return [
@@ -674,11 +677,13 @@ class Fonctionnaire {
                 cars_id = :cars_id,
                 chauffeurs_id = :chauffeurs_id,
                 date_declaration_assurance = :date_declaration_assurance,
+                -- `procédure` = :procédure,
                 `procédure` = :procedure,
                 status_resolution = :status_resolution,
                 commentaire = :commentaire,
                 date_accident  = :date_accident,
-                date_reparation = :date_reparation
+                date_reparation = :date_reparation,
+                suivie = :suivie
                 WHERE id = :id";
 
             $stmt = $this->conn->prepare($query);
@@ -693,6 +698,7 @@ class Fonctionnaire {
             $stmt->bindParam(':commentaire', $data['commentaire']);
             $stmt->bindParam(':date_accident', $data['date_accident']);
             $stmt->bindParam(':date_reparation', $data['date_reparation']);
+            $stmt->bindParam(':suivie', $data['suivie']);
 
             if($stmt->execute()) {
                 return [
