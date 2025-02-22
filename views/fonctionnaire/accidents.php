@@ -32,9 +32,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     'commentaire' => $_POST['commentaire'],
                     'date_accident' => $_POST['date_accident'],
                     'date_reparation' => $_POST['date_reparation'],
-                    'suivie' => $_POST['suivie'] ?? null,
                 ];  
-                
+
+                // Validate 'suivie' value
+                $allowed_suivie_values = ['en cours', 'cloture', 'arrengement'];
+                if (!in_array($_POST['suivie'], $allowed_suivie_values)) {
+                    $_POST['suivie'] = 'en cours'; // Set to default if invalid
+                }
+                $data['suivie'] = $_POST['suivie'];
+
                 $result = $fonctionnaire->createAccident($data);
                 if ($result['success']) {
                     $message = $result['message'];
@@ -57,9 +63,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     'commentaire' => $_POST['commentaire'],
                     'date_accident' => $_POST['date_accident'],
                     'date_reparation' => $_POST['date_reparation'],
-                    'suivie' => $_POST['suivie'],
                 ];
-                
+
+                // Validate 'suivie' value
+                $allowed_suivie_values = ['en cours', 'cloture', 'arrengement'];
+                if (!in_array($_POST['suivie'], $allowed_suivie_values)) {
+                    $_POST['suivie'] = 'en cours'; // Set to default if invalid
+                }
+                $data['suivie'] = $_POST['suivie'];
+
                 $result = $fonctionnaire->updateAccident($_POST['accident_id'], $data);
                 if ($result['success']) {
                     $message = $result['message'];
