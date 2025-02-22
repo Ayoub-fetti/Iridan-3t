@@ -27,6 +27,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     'ville' => $_POST['ville'] ?? '',
                     'adresse' => $_POST['adresse'] ?? '',
                     'contrat' => $_POST['contrat'] ?? '',
+                    'type_contract' => $_POST['type_contract'] ?? '',
                     'date_embauche' => $_POST['date_embauche'] ?? null,
                     'date_demission' => $_POST['date_demission'] ?? null,
                     'permit_conduire' => $_POST['permit_conduire'] ?? '',
@@ -56,6 +57,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     'ville' => $_POST['ville'] ?? '',
                     'adresse' => $_POST['adresse'] ?? '',
                     'contrat' => $_POST['contrat'] ?? '',
+                    'type_contract' => $_POST['type_contract'] ?? '',
                     'date_embauche' => $_POST['date_embauche'] ?? null,
                     'date_demission' => $_POST['date_demission'] ?? null,
                     'permit_conduire' => $_POST['permit_conduire'] ?? '',
@@ -312,6 +314,7 @@ $db = $database->connect();
                             <th class="px-6 py-3 text-left text-xs font-normal text-gray-500 uppercase tracking-wider">Ville</th>
                             <th class="px-6 py-3 text-left text-xs font-normal text-gray-500 uppercase tracking-wider">Adresse</th>
                             <th class="px-6 py-3 text-left text-xs font-normal text-gray-500 uppercase tracking-wider">Embauche</th>
+                            <th class="px-6 py-3 text-left text-xs font-normal text-gray-500 uppercase tracking-wider type-contract-cell">Type contrat</th>
                             <th class="px-6 py-3 text-left text-xs font-normal text-gray-500 uppercase tracking-wider">Démission</th>
                             <th class="px-6 py-3 text-left text-xs font-normal text-gray-500 uppercase tracking-wider">CIN</th>
                             <th class="px-6 py-3 text-left text-xs font-normal text-gray-500 uppercase tracking-wider">Permis</th>
@@ -343,6 +346,7 @@ $db = $database->connect();
                                     <td class="px-6 py-4 whitespace-nowrap"><?php echo htmlspecialchars($person['ville'] ?? ''); ?></td>
                                     <td class="px-6 py-4 whitespace-nowrap"><?php echo htmlspecialchars($person['adresse'] ?? ''); ?></td>
                                     <td class="px-6 py-4 whitespace-nowrap"><?php echo htmlspecialchars($person['date_embauche'] ?? ''); ?></td>
+                                    <td class="px-6 py-4 whitespace-nowrap type-contract-cell"><?php echo htmlspecialchars($person['type_contract'] ?? ''); ?></td>
                                     <td class="px-6 py-4 whitespace-nowrap"><?php echo htmlspecialchars($person['date_demission'] ?? ''); ?></td>
                                     <td class="px-6 py-4 whitespace-nowrap"><?php echo htmlspecialchars($person['date_expiration_carte'] ?? ''); ?></td>
                                     <td class="px-6 py-4 whitespace-nowrap"><?php echo htmlspecialchars($person['date_expiration_permit'] ?? ''); ?></td>
@@ -453,6 +457,14 @@ $db = $database->connect();
                 </div>
 
                 <div>
+                    <label class="block text-sm font-medium text-gray-700">Type de Contrat</label>
+                    <select name="type_contract" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                        <option value="cdi">CDI</option>
+                        <option value="cdd">CDD</option>
+                    </select>
+                </div>
+
+                <div>
                     <label class="block text-sm font-medium text-gray-700">Date d'embauche</label>
                     <input type="date" name="date_embauche" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
                 </div>
@@ -552,6 +564,13 @@ $db = $database->connect();
                 <div>
                     <label class="block text-sm font-medium text-gray-700">Contrat (PDF)</label>
                     <input type="file" name="contrat_file" id="contrat_file" accept=".pdf" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Type de contrat</label>
+                    <select name="type_contract" id="type_contract" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                        <option value="cdi">CDI</option>
+                        <option value="cdd">CDD</option>
+                    </select>
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700">Date d'embauche</label>
@@ -738,6 +757,7 @@ $db = $database->connect();
                         $('#ville').val(person.ville);
                         $('#adresse').val(person.adresse);
                         $('#date_embauche').val(person.date_embauche);
+                        $('#type_contract').val(person.type_contract);
                         $('#date_demission').val(person.date_demission);
                         $('#date_expiration_carte').val(person.date_expiration_carte);
                         $('#date_expiration_permit').val(person.date_expiration_permit);

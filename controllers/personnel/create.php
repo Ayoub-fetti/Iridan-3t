@@ -36,6 +36,7 @@ try {
         'ville' => $_POST['ville'],
         'adresse' => $_POST['adresse'] ?? null,
         'contrat' => $_POST['contrat'] ?? null,
+        'type_contract' => $_POST['type_contract'] ?? null,
         'date_embauche' => $_POST['date_embauche'],
         'date_demission' => $_POST['date_demission'],
         'permit_conduire' => null, // Sera mis à jour avec le chemin du fichier

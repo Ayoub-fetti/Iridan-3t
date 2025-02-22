@@ -19,7 +19,8 @@ class Fonctionnaire {
                 situation_familiale, 
                 ville, 
                 adresse, 
-                contrat, 
+                contrat,
+                type_contract, 
                 date_embauche, 
                 date_demission, 
                 permit_conduire, 
@@ -36,6 +37,7 @@ class Fonctionnaire {
                 :ville,
                 :adresse,
                 :contrat,
+                :type_contract,
                 :date_embauche,
                 :date_demission,
                 :permit_conduire,
@@ -56,6 +58,7 @@ class Fonctionnaire {
             $stmt->bindParam(':ville', $data['ville']);
             $stmt->bindParam(':adresse', $data['adresse']);
             $stmt->bindParam(':contrat', $data['contrat']);
+            $stmt->bindParam(':type_contract', $data['type_contract']);
             $stmt->bindParam(':date_embauche', $data['date_embauche']);
             $stmt->bindParam(':date_demission', $data['date_demission']);
             $stmt->bindParam(':permit_conduire', $data['permit_conduire']);
@@ -146,7 +149,7 @@ class Fonctionnaire {
             $allowedFields = [
                 'nom_complet', 'carte_identite', 'date_expiration_carte', 
                 'role', 'situation_familiale', 'ville', 'adresse', 
-                'contrat', 'date_embauche', 'date_demission', 
+                'contrat', 'type_contract', 'date_embauche', 'date_demission', 
                 'permit_conduire', 'date_expiration_permit', 
                 'visite_medicale', 'date_expiration_visite', 'photo'
             ];
