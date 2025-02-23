@@ -111,6 +111,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
+
     <style>
         .modal {
             display: none;
@@ -261,6 +264,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                         <button onclick="deleteAccident(<?php echo htmlspecialchars($accident['id']); ?>)" class="text-red-600 hover:text-red-900" title="Supprimer">
                                             <i class="fas fa-trash"></i>
                                         </button>
+                                        <button onclick="downloadAccidentPDF(<?php echo htmlspecialchars(json_encode($accident)); ?>)" 
+                                        class="text-green-600 hover:text-green-900 ml-2" 
+                                        title="Télécharger PDF">
+                                        <i class="fas fa-file-pdf"></i>
+                                </button>
+
                                     </td>
                                 </tr>
                             <?php endforeach; ?>
@@ -533,6 +542,70 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 showConfirmButton: false
             });
         <?php endif; ?>
+    </script>
+    <script>
+        function downloadAccidentPDF(accident) {
+    // Create new jsPDF instance
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+
+    // Set document properties
+    doc.setFont("helvetica");
+    doc.setFontSize(16);
+    
+    // Add title
+    doc.text("Accident Report", 105, 15, { align: "center" });
+    
+    // Add accident information
+    doc.setFontSize(12);
+    const startY = 30;
+    const lineHeight = 10;
+    
+    const content = [
+        ["Immatriculation du véhicule", accident.matricule_vehicule],
+        ["Nom du conducteu", accident.nom_chauffeur],
+        ["Date de déclaration d'assurance", accident.date_declaration_assurance],
+        ["Procedure", accident.procédure],
+        ["Statut de résolution", accident.status_resolution],
+        ["Commentaires", accident.commentaire],
+        ["Suivie", accident.suivie],
+        ["Date de l'accident", accident.date_accident],
+        ["Date de réparation", accident.date_reparation]
+    ];
+
+    // Add content using autotable
+    doc.autoTable({
+        startY: startY,
+        head: [['Field', 'Value']],
+        body: content,
+        theme: 'grid',
+        headStyles: {
+            fillColor: [66, 135, 245],
+            textColor: 255
+        },
+        styles: {
+            overflow: 'linebreak',
+            cellWidth: 'wrap'
+        },
+        columnStyles: {
+            0: { cellWidth: 80 },
+            1: { cellWidth: 110 }
+        }
+    });
+
+    // Add footer with date
+    const pageCount = doc.internal.getNumberOfPages();
+    doc.setFontSize(10);
+    for(let i = 1; i <= pageCount; i++) {
+        doc.setPage(i);
+        doc.text(`Generated on: ${new Date().toLocaleString()}`, 105, doc.internal.pageSize.height - 10, { align: "center" });
+    }
+
+    // Save the PDF
+    const fileName = `Accident_Report_${accident.matricule_vehicule}_${accident.date_accident}.pdf`;
+    doc.save(fileName);
+}
+
     </script>
 </body>
 </html>
