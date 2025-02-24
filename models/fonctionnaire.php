@@ -22,7 +22,6 @@ class Fonctionnaire {
                 contrat,
                 type_contract, 
                 date_embauche, 
-                date_demission, 
                 permit_conduire, 
                 date_expiration_permit, 
                 visite_medicale, 
@@ -39,7 +38,6 @@ class Fonctionnaire {
                 :contrat,
                 :type_contract,
                 :date_embauche,
-                :date_demission,
                 :permit_conduire,
                 :date_expiration_permit,
                 :visite_medicale,
@@ -48,7 +46,7 @@ class Fonctionnaire {
             )";
 
             $stmt = $this->conn->prepare($query);
-
+            
             // Bind les paramètres
             $stmt->bindParam(':nom_complet', $data['nom_complet']);
             $stmt->bindParam(':carte_identite', $data['carte_identite']);
@@ -60,7 +58,6 @@ class Fonctionnaire {
             $stmt->bindParam(':contrat', $data['contrat']);
             $stmt->bindParam(':type_contract', $data['type_contract']);
             $stmt->bindParam(':date_embauche', $data['date_embauche']);
-            $stmt->bindParam(':date_demission', $data['date_demission']);
             $stmt->bindParam(':permit_conduire', $data['permit_conduire']);
             $stmt->bindParam(':date_expiration_permit', $data['date_expiration_permit']);
             $stmt->bindParam(':visite_medicale', $data['visite_medicale']);
@@ -735,6 +732,26 @@ class Fonctionnaire {
                 'data' => $stmt->fetchAll(PDO::FETCH_ASSOC)
             ];
 
+        } catch(PDOException $e) {
+            return [
+                'success' => false,
+                'message' => 'Erreur: ' . $e->getMessage()
+            ];
+        }
+    }
+
+    public function getPersonnelByEmbaucheDate($date) {
+        try {
+            $query = "SELECT * FROM personnel WHERE date_embauche <= :date AND date_demission IS NOT NULL ORDER BY date_embauche DESC";
+            $stmt = $this->conn->prepare($query);
+            $stmt->bindParam(':date', $date);
+            $stmt->execute();
+    
+            return [
+                'success' => true,
+                'data' => $stmt->fetchAll(PDO::FETCH_ASSOC)
+            ];
+    
         } catch(PDOException $e) {
             return [
                 'success' => false,

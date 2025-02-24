@@ -29,7 +29,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     'contrat' => $_POST['contrat'] ?? '',
                     'type_contract' => $_POST['type_contract'] ?? '',
                     'date_embauche' => $_POST['date_embauche'] ?? null,
-                    'date_demission' => $_POST['date_demission'] ?? null,
+                    //'date_demission' => !empty($_POST['date_demission']) ? $_POST['date_demission'] : null,
                     'permit_conduire' => $_POST['permit_conduire'] ?? '',
                     'date_expiration_permit' => $_POST['date_expiration_permit'] ?? null,
                     'visite_medicale' => $_POST['visite_medicale'] ?? '',
@@ -59,7 +59,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     'contrat' => $_POST['contrat'] ?? '',
                     'type_contract' => $_POST['type_contract'] ?? '',
                     'date_embauche' => $_POST['date_embauche'] ?? null,
-                    'date_demission' => $_POST['date_demission'] ?? null,
+                    'date_demission' => !empty($_POST['date_demission']) ? $_POST['date_demission'] : null,
                     'permit_conduire' => $_POST['permit_conduire'] ?? '',
                     'date_expiration_permit' => $_POST['date_expiration_permit'] ?? null,
                     'visite_medicale' => $_POST['visite_medicale'] ?? '',
@@ -237,6 +237,12 @@ $db = $database->connect();
                         <a href="accidents.php" class="flex items-center px-6 py-2 text-gray-700 hover:bg-gray-200">
                         <i class="fas fa-car-crash mr-2"></i>
                             Collision
+                        </a>
+                    </li>
+                    <li>
+                        <a href="personnel_embauche.php" class="flex items-center px-6 py-2 text-gray-700">
+                            <i class="fas fa-user-clock mr-2"></i>
+                            Personnel Embauché
                         </a>
                     </li>
                     <li>
@@ -428,6 +434,7 @@ $db = $database->connect();
                         <option value="chauffeurs">Chauffeur</option>
                         <option value="chef de zone">Chef de zone</option>
                         <option value="chef de site">Chef de site</option>
+                        <option value="superviseur">Superviseur</option>
                         <option value="menage">Ménage</option>
                         <option value="securite">Sécurité</option>
                     </select>

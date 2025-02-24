@@ -201,6 +201,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         </a>
                     </li>
                     <li>
+                        <a href="personnel_embauche.php" class="flex items-center px-6 py-2 text-gray-700">
+                            <i class="fas fa-user-clock mr-2"></i>
+                            Personnel Embauché
+                        </a>
+                    </li>
+                    <li>
                         <a href="../auth/logout.php" class="flex items-center px-6 py-2 text-gray-700 hover:bg-red-200">
                             <i class="fas fa-sign-out-alt mr-2"></i>
                             Déconnexion
@@ -554,7 +560,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     doc.setFontSize(16);
     
     // Add title
-    doc.text("Accident Report", 105, 15, { align: "center" });
+    doc.text("Rapport d'accident", 105, 15, { align: "center" });
     
     // Add accident information
     doc.setFontSize(12);
@@ -576,7 +582,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Add content using autotable
     doc.autoTable({
         startY: startY,
-        head: [['Field', 'Value']],
+        head: [['Champ', 'Valeur']],
         body: content,
         theme: 'grid',
         headStyles: {
