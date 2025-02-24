@@ -338,7 +338,10 @@ $db = $database->connect();
                                 <tr data-id="<?php echo htmlspecialchars($person['id'] ?? ''); ?>" 
                                     data-carte-expiration="<?php echo htmlspecialchars($person['date_expiration_carte'] ?? ''); ?>" 
                                     data-permit-expiration="<?php echo htmlspecialchars($person['date_expiration_permit'] ?? ''); ?>" 
-                                    data-visite-expiration="<?php echo htmlspecialchars($person['date_expiration_visite'] ?? ''); ?>">
+                                    data-visite-expiration="<?php echo htmlspecialchars($person['date_expiration_visite'] ?? ''); ?>"
+                                    data-demission="<?php echo htmlspecialchars($person['date_demission'] ?? ''); ?>">
+                                    
+
                                     <td class="px-6 py-4 whitespace-nowrap photo-cell">
                                         <?php if (!empty($person['photo'])) : ?>
                                             <img src="../../<?php echo htmlspecialchars($person['photo'] ?? ''); ?>" alt="Photo de profil" class="profile-photo">
@@ -671,28 +674,58 @@ $db = $database->connect();
                 });
             });
         });
-                function checkDocumentExpiration() {
-            const rows = document.querySelectorAll('tbody tr');
-            rows.forEach(row => {
-                const today = new Date();
+        //         function checkDocumentExpiration() {
+        //     const rows = document.querySelectorAll('tbody tr');
+        //     rows.forEach(row => {
+        //         const today = new Date();
                 
-                // Get expiration dates from data attributes
-                const carteExpirationDate = row.getAttribute('data-carte-expiration');
-                const permitExpirationDate = row.getAttribute('data-permit-expiration');
-                const visiteExpirationDate = row.getAttribute('data-visite-expiration');
+        //         // Get expiration dates from data attributes
+        //         const carteExpirationDate = row.getAttribute('data-carte-expiration');
+        //         const permitExpirationDate = row.getAttribute('data-permit-expiration');
+        //         const visiteExpirationDate = row.getAttribute('data-visite-expiration');
                 
-                // Check if any document is expired
-                const isExpired = 
-                    (carteExpirationDate && new Date(carteExpirationDate) < today) ||
-                    (permitExpirationDate && new Date(permitExpirationDate) < today) ||
-                    (visiteExpirationDate && new Date(visiteExpirationDate) < today);
+        //         // Check if any document is expired
+        //         const isExpired = 
+        //             (carteExpirationDate && new Date(carteExpirationDate) < today) ||
+        //             (permitExpirationDate && new Date(permitExpirationDate) < today) ||
+        //             (visiteExpirationDate && new Date(visiteExpirationDate) < today);
                 
-                // Apply red background if expired
-                if (isExpired) {
-                    row.classList.add('bg-red-100');
-                }
-            });
+        //         // Apply red background if expired
+        //         if (isExpired) {
+        //             row.classList.add('bg-red-100');
+        //         }
+        //     });
+        // }
+        function checkDocumentExpiration() {
+    const rows = document.querySelectorAll('tbody tr');
+    rows.forEach(row => {
+        const today = new Date();
+        
+        // Get expiration dates from data attributes
+        const carteExpirationDate = row.getAttribute('data-carte-expiration');
+        const permitExpirationDate = row.getAttribute('data-permit-expiration');
+        const visiteExpirationDate = row.getAttribute('data-visite-expiration');
+        const demissionDate = row.getAttribute('data-demission');
+        
+        // Check if any document is expired
+        const isExpired = 
+            (carteExpirationDate && new Date(carteExpirationDate) < today) ||
+            (permitExpirationDate && new Date(permitExpirationDate) < today) ||
+            (visiteExpirationDate && new Date(visiteExpirationDate) < today);
+        
+        // Apply red background if expired
+        if (isExpired) {
+            row.classList.add('bg-red-100');
         }
+
+        // Apply blue background if demission date is set
+        if (demissionDate) {
+            row.classList.add('bg-orange-300');
+        }
+    });
+}
+
+
 
         // Call the function when the page loads
         document.addEventListener('DOMContentLoaded', checkDocumentExpiration);
