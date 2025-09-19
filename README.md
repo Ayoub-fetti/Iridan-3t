@@ -22,7 +22,5 @@ Built with **PHP**, **HTML**, **CSS/Tailwind CSS**, **JavaScript**, and **Postgr
 - **Database:** PostgreSQL  
 - **Other Tools:** Optional libraries or plugins for charts, forms, or validations.
 
----
 
-## 📂 Project Structure (example)
 
